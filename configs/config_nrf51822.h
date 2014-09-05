@@ -19,11 +19,17 @@
  * THE SOFTWARE.
  */
 
-#include "bleal/bleal.h"
+#ifndef _BLE_AL_CONFIG_nRF51822_H_
+#define _BLE_AL_CONFIG_nRF51822_H_
 
-int main()
-{
-    bleal_initialize();
+#define CLOCK_LFCLKSRC_XTAL_VALUE   NRF_CLOCK_LFCLKSRC_XTAL_20_PPM
 
-    bleal_loop();
-}
+#define SCHEDULER_MAX_EVENT_SIZE MAX(APP_TIMER_SCHED_EVT_SIZE, BLE_STACK_HANDLER_SCHED_EVT_SIZE)
+#define SCHEDULER_QUEUE_SIZE    10
+
+#define TIMER_PRESCALER                 0
+#define TIMER_MAX_TIMERS                4
+#define TIMER_OP_QUEUE_SIZE             5
+
+#endif
+

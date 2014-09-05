@@ -19,11 +19,14 @@
  * THE SOFTWARE.
  */
 
-#include "bleal/bleal.h"
+#include "scheduler.h"
 
-int main()
+#include "softdevice_handler.h"
+#include "app_scheduler.h"
+#include "app_timer.h"
+#include "config_nrf51822.h"
+
+void scheduler_init(void)
 {
-    bleal_initialize();
-
-    bleal_loop();
+    APP_SCHED_INIT(SCHEDULER_MAX_EVENT_SIZE, SCHEDULER_QUEUE_SIZE);
 }

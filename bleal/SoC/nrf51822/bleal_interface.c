@@ -21,8 +21,11 @@
 
 #include "bleal_interface.h"
 
+#include "config_nrf51822.h"
+
 void _bleal_initialize(void)
 {
+    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_XTAL_VALUE, true);
 }
 
 void _bleal_loop(void)

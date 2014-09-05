@@ -19,11 +19,9 @@
  * THE SOFTWARE.
  */
 
-#include "bleal/bleal.h"
+#ifndef _BLE_AL_NRF51822_SCHEDULER_H_
+#define _BLE_AL_NRF51822_SCHEDULER_H_
 
-int main()
-{
-    bleal_initialize();
+void scheduler_init();
 
-    bleal_loop();
-}
+#endif // _BLE_AL_NRF51822_SCHEDULER_H_
