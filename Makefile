@@ -7,7 +7,7 @@ C_SOURCE_FILES += bleal.c hwal.c
 # BLE AL for nRF51822
 INCLUDEPATHS += -I"bleal/Soc/nrf51822"
 C_SOURCE_PATHS += bleal/SoC/nrf51822
-C_SOURCE_FILES += bleal_interface.c bleal_nrf51822.c blea_nrf51822_scheduler.c
+C_SOURCE_FILES += bleal_interface.c bleal_nrf51822.c bleal_nrf51822_scheduler.c
 
 TARGET_CHIP := NRF51822_QFAA_CA
 BOARD := BOARD_PCA10001
@@ -28,18 +28,10 @@ TEMPLATE_PATH = $(BUILD_SCRIPTS_PATH)
 CFLAGS += -DBLE_STACK_SUPPORT_REQD
 # debug: CFLAGS+=-DENABLE_DEBUG_LOG_SUPPORT # app module uses no flow control
 
-C_SOURCE_FILES += main.c scheduler.c hardware.c timer.c gpiote.c 
+C_SOURCE_FILES += main.c
 
-C_SOURCE_FILES += sys_handler.c
 
 # ble related sources
-INCLUDEPATHS += -I"./"
-C_SOURCE_PATHS += ble
-C_SOURCE_FILES += ble_app.c ble_app_gatts.c
-
-ifeq ($(MAKECMDGOALS),debug)
-    C_SOURCE_FILES += uart.c
-endif
 
 # nrf_delay
 # C_SOURCE_FILES += nrf_delay.c

@@ -31,4 +31,6 @@
 
 void _nrf51822_setup();
 
+void _power_manage(void);
+
 #endif // _BLE_AL_NRF51822_H_
