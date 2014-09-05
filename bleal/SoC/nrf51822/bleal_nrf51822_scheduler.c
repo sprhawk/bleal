@@ -19,7 +19,7 @@
  * THE SOFTWARE.
  */
 
-#include "scheduler.h"
+#include "blea_nrf51822_scheduler.h"
 
 #include "softdevice_handler.h"
 #include "app_scheduler.h"
