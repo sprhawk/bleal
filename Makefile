@@ -1,12 +1,14 @@
-# Bluetooth Low Energy Soc Hardware Abstraction Layer related
+include ../Makefile.config
 
 INCLUDEPATHS += -I"bleal" -I"config"
 C_SOURCE_PATHS += bleal
 C_SOURCE_FILES += bleal.c hwal.c
 
 # BLE AL for nRF51822
-INCLUDEPATHS += -I"bleal/Soc/nrf51822"
-C_SOURCE_PATHS += bleal/SoC/nrf51822
+INCLUDEPATHS += -I"bleal/src/Soc/nrf51822"
+INCLUDEPATHS += -I"bleal/include"
+C_SOURCE_PATHS += bleal/src
+C_SOURCE_PATHS += bleal/src/SoC/nrf51822
 C_SOURCE_FILES += bleal_interface.c bleal_nrf51822.c bleal_nrf51822_scheduler.c
 
 TARGET_CHIP := NRF51822_QFAA_CA
@@ -17,21 +19,20 @@ DEVICE_VARIANT := xxaa
 #DEVICE_VARIANT := xxab
 
 USE_SOFTDEVICE := S110
-#USE_SOFTDEVICE := S210
+#USE_SOFTDEVICE := S110-v6
+#USE_SOFTDEVICE := S120
 
-HOME = /Users/hongbo.yang/
-SDK_PATH = $(HOME)Developer/prjs/embeded/nrf/nrf51_sdk_v6_0_0_43681/nrf51822/
-SOFTDEVICE_HEX_PATH = $(HOME)Developer/prjs/embeded/nrf/s110_nrf51822_7.0.0/s110_nrf51822_7.0.0_softdevice.hex
-BUILD_SCRIPTS_PATH = $(HOME)Developer/prjs/embeded/prjs/nrf51822/build_scripts/
-TEMPLATE_PATH = $(BUILD_SCRIPTS_PATH)
+
 
 CFLAGS += -DBLE_STACK_SUPPORT_REQD
-# debug: CFLAGS+=-DENABLE_DEBUG_LOG_SUPPORT # app module uses no flow control
+# debug: CFLAGS+=-DENABLE_DEBUG_LOG_SUPPORT
 
 C_SOURCE_FILES += main.c
+ifeq ($(MAKECMDGOALS),debug) # template for conditional rules
+# C_SOURCE_FILES += uart.c
+endif
 
-
-# ble related sources
+# C_SOURCE_FILES += softdevice_handler.c # need custome defined assert_nrf_callback()
 
 # nrf_delay
 # C_SOURCE_FILES += nrf_delay.c
@@ -80,7 +81,7 @@ C_SOURCE_FILES += app_timer.c
 # C_SOURCE_FILES += pstorage.c # need pstorage_platform.h
 
 # ble
-C_SOURCE_FILES += ble_advdata.c
+# C_SOURCE_FILES += ble_advdata.c
 # C_SOURCE_FILES += ble_advdata_parser.c
 # C_SOURCE_FILES += ble_conn_params.c
 # C_SOURCE_FILES += ble_debug_assert_handler.c
@@ -116,5 +117,8 @@ C_SOURCE_FILES += ble_advdata.c
 
 OUTPUT_FILENAME := main
 
-include $(TEMPLATE_PATH)Makefile.common
+include $(TEMPLATE_PATH)/Makefile.common
 
+serial:
+	screen /dev/ttyUSB1cu.usbmodem1411 38400
+	# screen /dev/cu.usbmodem1411 38400 # device under Mac OSX
