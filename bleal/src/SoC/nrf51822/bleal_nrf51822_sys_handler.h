@@ -22,4 +22,6 @@
 #ifndef _BLE_AL_NRF51822_SYS_HANDLER_H_
 #define _BLE_AL_NRF51822_SYS_HANDLER_H_
 
+void sys_evt_handler_init();
+
 #endif // _BLE_AL_NRF51822_SYS_HANDLER_H_

@@ -20,12 +20,29 @@
  */
 
 #include "bleal_nrf51822.h"
+
+// std headers
 #include <stdio.h>
 
+// BLE AL headers
 #include "config_nrf51822.h"
+#include "bleal_nrf51822_sys_handler.h"
+#include "bleal/log.h"
 
-static void sys_on_event_handler(uint32_t evt);
 static void ble_on_event_handler(ble_evt_t * p_ble_evt);
+
+bleal_err check_nrf_error(uint32_t err)
+{
+    bleal_err code = BLEAL_ERR_NOT_IMPLEMENTED;
+    switch(err) {
+        case NRF_SUCCESS:
+            code = BLEAL_ERR_SUCCESS;
+            break;
+        default:
+            code = BLEAL_ERR_UNKNOWN;
+    }
+    return code;
+}
 
 void _nrf51822_setup()
 {
@@ -33,8 +50,8 @@ void _nrf51822_setup()
     APP_ERROR_CHECK(sd_ble_enable(&bep));
     SOFTDEVICE_HANDLER_INIT(CLOCK_LFCLKSRC_XTAL_VALUE, true);
 
+    sys_evt_handler_init();
     APP_ERROR_CHECK(softdevice_ble_evt_handler_set(ble_on_event_handler));
-    APP_ERROR_CHECK(softdevice_sys_evt_handler_set(sys_on_event_handler));
 }
 
 void _power_manage(void)
@@ -42,13 +59,6 @@ void _power_manage(void)
         APP_ERROR_CHECK(sd_app_evt_wait());
 }
 
-void sys_on_event_handler(uint32_t evt)
-{
-    switch(evt) {
-        default:
-            break;
-    }
-}
 
 void ble_on_event_handler(ble_evt_t * p_ble_evt)
 {
@@ -61,10 +71,9 @@ void ble_on_event_handler(ble_evt_t * p_ble_evt)
 // error handler
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name)
 {
-#ifdef DEBUG
         // printf will add about 35KB size of code
-        printf("%s:%lu -- err:0x%04lx\r\n", (char *)p_file_name, line_num, error_code);
-#else
+        bleal_log("%s:%lu -- err:0x%04lx\r\n", (char *)p_file_name, line_num, error_code);
+#ifndef DEBUG
             sd_nvic_SystemReset();
 #endif
 }

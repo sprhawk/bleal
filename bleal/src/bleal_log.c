@@ -1,4 +1,5 @@
-/* 
+/* file: bleal_log.c
+ *
  * Copyright (c) 2014, Yang Hongbo (hongbo@yang.me) 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,27 +20,14 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BLE_AL_NRF51822_H_
-#define _BLE_AL_NRF51822_H_
+#include "bleal/log.h"
+#include <stdio.h>
+#include <stdarg.h>
 
-// Nordic Semi nRF 51822 SDK headers
-#include "nrf.h"
-#include "nrf_sdm.h"
-#include "nrf_soc.h"
-
-#include "softdevice_handler.h"
-#include "app_error.h"
-
-#include "ble_gap.h"
-
-#include "bleal/error.h"
-
-#define RETURN_NRF_ERROR(err)  return check_nrf_error(err)
-
-bleal_err check_nrf_error(uint32_t err);
-
-void _nrf51822_setup();
-
-void _power_manage(void);
-
-#endif // _BLE_AL_NRF51822_H_
+void bleal_log(char *s, ...)
+{
+    va_list ap;
+    va_start(ap, s);
+    (void)vprintf(s, ap);
+    va_end(ap);
+}

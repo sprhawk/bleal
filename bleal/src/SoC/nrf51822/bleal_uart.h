@@ -1,4 +1,4 @@
-/* 
+/* file: bleal_uart.h
  * Copyright (c) 2014, Yang Hongbo (hongbo@yang.me) 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,13 +19,6 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BLE_AL_ERR_H_
-#define _BLE_AL_ERR_H_
+#include "bleal/hwal.h"
 
-#include <stdint.h>
-
-typedef uint32_t bleal_err;
-
-#define BLEAL_ERR_SUCCESS           0
-
-#endif // _BLE_AL_ERR_H_
+void bleal_uart_init(void);

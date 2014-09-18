@@ -1,15 +1,25 @@
+# build scripts come from https://github.com/sprhawk/nrf51822-macosx-build-scripts
+# modifiy Makefile.config.template from build scripts to adapt your environment
+
 include ../Makefile.config
 
 INCLUDEPATHS += -I"bleal" -I"config"
-C_SOURCE_PATHS += bleal
-C_SOURCE_FILES += bleal.c hwal.c
 
 # BLE AL for nRF51822
 INCLUDEPATHS += -I"bleal/src/Soc/nrf51822"
 INCLUDEPATHS += -I"bleal/include"
 C_SOURCE_PATHS += bleal/src
 C_SOURCE_PATHS += bleal/src/SoC/nrf51822
-C_SOURCE_FILES += bleal.c bleal_nrf51822.c bleal_nrf51822_scheduler.c
+
+C_SOURCE_FILES += bleal.c bleal_nrf51822.c bleal_nrf51822_scheduler.c bleal_nrf51822_sys_handler.c
+C_SOURCE_FILES += bleal_advertisement.c
+# C_SOURCE_FILES += bleal_byteorder.c # it will be required only when use big endian
+
+ifeq ($(MAKECMDGOALS),debug) # template for conditional rules
+C_SOURCE_FILES += bleal_log.c
+C_SOURCE_FILES += bleal_uart.c
+C_SOURCE_FILES += simple_uart.c
+endif
 
 TARGET_CHIP := NRF51822_QFAA_CA
 BOARD := BOARD_PCA10001
@@ -30,7 +40,6 @@ CFLAGS += -DBLE_STACK_SUPPORT_REQD
 
 C_SOURCE_FILES += main.c ble_app.c
 ifeq ($(MAKECMDGOALS),debug) # template for conditional rules
-# C_SOURCE_FILES += uart.c
 endif
 
 # C_SOURCE_FILES += softdevice_handler.c # need custome defined assert_nrf_callback()
@@ -61,7 +70,7 @@ endif
 # C_SOURCE_FILES += twi_sw_master.c
 
 # simple_uart
-C_SOURCE_FILES += simple_uart.c
+# C_SOURCE_FILES += simple_uart.c
 
 # sd_common
 C_SOURCE_FILES += softdevice_handler.c

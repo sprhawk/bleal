@@ -19,24 +19,23 @@
  * THE SOFTWARE.
  */
 
-#include "sys_handler.h"
+#include "bleal_nrf51822_sys_handler.h"
 
 #include <stdio.h>
+#include "bleal/log.h"
 
 #include "softdevice_handler.h"
 
-static void sys_evt_handler(uint32_t evt);
+static void sys_on_event_handler(uint32_t evt);
 
-void _sys_evt_handler_init()
+void sys_evt_handler_init()
 {
-    softdevice_sys_evt_handler_set(sys_evt_handler);
+    softdevice_sys_evt_handler_set(sys_on_event_handler);
 }
 
-void sys_evt_handler(uint32_t evt)
+void sys_on_event_handler(uint32_t evt)
 {
-#ifdef DEBUG
-    printf("sys_evt:%lu\r\n", evt);
-#endif
+    bleal_log("sys_evt:%lu\r\n", evt);
 
     switch(evt) {
         default:

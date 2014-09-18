@@ -1,4 +1,5 @@
-/* 
+/* file: bleal.h
+ *
  * Copyright (c) 2014, Yang Hongbo (hongbo@yang.me) 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,14 +24,45 @@
 #define _BLE_AL_H_
 
 #include <stdint.h>
-#include "bleal_err.h"
+#include "bleal/error.h"
+#include "bleal/hci_error.h"
+#include "bleal/appearance.h"
+#include "bleal/advertisement.h"
+
+typedef struct bleal_peer_t {
+    void *handle; // handle may be any value, eg, handle to a unit16_t value for nrf51822
+}bleal_peer_t, * bleal_peer_p;
+
+typedef struct bleal_connection_parameters_t {
+    // connection interval shall be in 1.25ms units in the range of 7.5ms to 4.0s.
+    // slave latency shall be in the range of 0 to ((connSupervisonTimeout/connInterval) - 1), and less than 500. 
+    // (Bluetooth Core Specification 4.0 Volume 6 Part B 4.5.1)
+    uint16_t min_connection_interval; 
+    uint16_t max_connection_interval;
+    uint16_t slave_latency; 
+    // in 10ms units, in the range of 100ms to 32.0s, shall be larger than ( 1 + slave_latency ) * conn_interval  
+    // (Bluetooth Core Specification 4.0 Volume 6 Part B 4.5.2)
+    uint16_t connection_supervision_timeout; 
+} bleal_connection_parameters_t, bleal_conn_params_t, * bleal_connection_parameters_p, * bleal_conn_params_p;
+
+typedef struct bleal_device_parameters_t {
+    uint8_t *p_device_name;
+    uint16_t device_name_len;
+    bleal_connection_parameters_t parameters;
+    bleal_appearance_t appearance;
+}bleal_device_parameters_t, bleal_dev_params_t, * bleal_device_parameters_p, * bleal_dev_params_p;
 
 bleal_err bleal_initialize();
 
 void bleal_loop();
 
-bleal_err bleal_start_advertisement(const uint8_t *adv, const uint8_t adv_len, const uint8_t * resp, const uint8_t resp_len);
+bleal_err bleal_start_adv(const bleal_ad_params_t *params, const uint8_t *p_adv, const uint8_t adv_len, const uint8_t * p_resp, const uint8_t resp_len);
+bleal_err bleal_start_advertisement(const bleal_ad_params_t *params, const bleal_ad_data_t *p_ad_data, const uint8_t ad_num, const bleal_ad_data_t * p_resp_data, const uint8_t resp_num);
 
-bleal_err bleal_disconnect();
+bleal_err bleal_setup_ble_device(const bleal_device_parameters_t *p_device_parameters);
+bleal_err bleal_setup_device_name(const uint8_t *p_device_name, const uint16_t len);
+bleal_err bleal_setup_connection_parameters(const bleal_connection_parameters_t *p_connection_parameters);
+bleal_err bleal_setup_appearance(const bleal_appearance_t appearance);
+bleal_err bleal_disconnect(const bleal_peer_t *p_peer, const hci_error_code_t error_code);
 
 #endif // _BLE_AL_H_ 

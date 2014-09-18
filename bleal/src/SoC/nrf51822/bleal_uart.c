@@ -1,4 +1,4 @@
-/* 
+/* file: bleal.c 
  * Copyright (c) 2014, Yang Hongbo (hongbo@yang.me) 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,27 +19,21 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BLE_AL_NRF51822_H_
-#define _BLE_AL_NRF51822_H_
+#include "bleal/hwal.h"
 
-// Nordic Semi nRF 51822 SDK headers
-#include "nrf.h"
-#include "nrf_sdm.h"
-#include "nrf_soc.h"
+#include "simple_uart.h"
+#include "config_nrf51822.h"
 
-#include "softdevice_handler.h"
-#include "app_error.h"
+void bleal_uart_init(void)
+{
+    simple_uart_config(RTS_PIN_NUMBER, TX_PIN_NUMBER, CTS_PIN_NUMBER, RX_PIN_NUMBER, HWFC);
+}
+int _write(int file, char *ptr, int len);
 
-#include "ble_gap.h"
-
-#include "bleal/error.h"
-
-#define RETURN_NRF_ERROR(err)  return check_nrf_error(err)
-
-bleal_err check_nrf_error(uint32_t err);
-
-void _nrf51822_setup();
-
-void _power_manage(void);
-
-#endif // _BLE_AL_NRF51822_H_
+int _write(int file, char *ptr, int len)
+{
+    for(int i = 0; i < len; i ++) {
+        simple_uart_put((uint8_t)*(ptr + i));
+    }
+    return len;
+}

@@ -1,4 +1,7 @@
-/* 
+/* File: uuid.h
+ * Author: YangHongbo<hongbo@yang.me>
+ * Created at: Sep 18th, 2014
+ *
  * Copyright (c) 2014, Yang Hongbo (hongbo@yang.me) 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,27 +22,13 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BLE_AL_NRF51822_H_
-#define _BLE_AL_NRF51822_H_
+#ifndef _BLEAL_UUID_H_
+#define _BLEAL_UUID_H_
 
-// Nordic Semi nRF 51822 SDK headers
-#include "nrf.h"
-#include "nrf_sdm.h"
-#include "nrf_soc.h"
+typedef uint16_t bleal_uuid16_t;
 
-#include "softdevice_handler.h"
-#include "app_error.h"
+typedef union bleal_uuid128_t {
+    uint8_t data[16];
+} bleal_uuid128_t;
 
-#include "ble_gap.h"
-
-#include "bleal/error.h"
-
-#define RETURN_NRF_ERROR(err)  return check_nrf_error(err)
-
-bleal_err check_nrf_error(uint32_t err);
-
-void _nrf51822_setup();
-
-void _power_manage(void);
-
-#endif // _BLE_AL_NRF51822_H_
+#endif // _BLEAL_UUID_H_

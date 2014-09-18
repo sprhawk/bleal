@@ -21,7 +21,14 @@
 
 #include "bleal/bleal.h"
 
+#include "bleal/log.h"
+#include "bleal/byteorder.h"
+#include "bleal/advertisement.h"
+
 #include "bleal_nrf51822.h"
+
+#include <stdlib.h>
+#include <string.h>
 
 bleal_err bleal_initialize(void)
 {
@@ -37,12 +44,97 @@ void bleal_loop(void)
     }
 }
 
-bleal_err bleal_start_advertisement(const uint8_t *adv, const uint8_t adv_len, const uint8_t * resp, const uint8_t resp_len)
+bleal_err bleal_setup_ble_device(const bleal_device_parameters_t *p_device_parameters)
 {
-    return BLEAL_ERR_SUCCESS;
+    bleal_err code = BLEAL_ERR_UNKNOWN;
+    if(p_device_parameters) {
+        code = bleal_setup_connection_parameters(&p_device_parameters->parameters);
+        if (BLEAL_ERR_SUCCESS != code) {
+            return code;
+        }
+        if (p_device_parameters->p_device_name && p_device_parameters->device_name_len > 0) {
+            code = bleal_setup_device_name(p_device_parameters->p_device_name, p_device_parameters->device_name_len);
+        }
+        if (BLEAL_ERR_SUCCESS != code) {
+            return code;
+        }
+        code = bleal_setup_appearance(p_device_parameters->appearance);
+        return code;
+    }
+    DEBUG_LOG("p_device_parameters cannot be NULL\n");
+    return BLEAL_ERR_INVALID_PARAMETER;
 }
 
-bleal_err bleal_disconnect()
+bleal_err bleal_setup_connection_parameters(const bleal_connection_parameters_t *p_connection_parameters)
 {
-    return BLEAL_ERR_SUCCESS;
+    ble_gap_conn_params_t conn_params;
+    memset(&conn_params, 0, sizeof(conn_params));
+
+    const bleal_conn_params_t *cp = p_connection_parameters;
+    conn_params.min_conn_interval = cp->min_connection_interval;
+    conn_params.max_conn_interval = cp->max_connection_interval;
+    conn_params.slave_latency = cp->slave_latency;
+    conn_params.conn_sup_timeout = cp->connection_supervision_timeout;
+
+    RETURN_NRF_ERROR(sd_ble_gap_ppcp_set(&conn_params));
+    return BLEAL_ERR_NOT_IMPLEMENTED;
+}
+
+bleal_err bleal_setup_device_name(const uint8_t *p_device_name, const uint16_t len)
+{
+    ble_gap_conn_sec_mode_t sec_mode;
+    memset(&sec_mode, 0, sizeof(sec_mode));
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
+    RETURN_NRF_ERROR(sd_ble_gap_device_name_set(&sec_mode, p_device_name, len));
+}
+
+bleal_err bleal_setup_appearance(const bleal_appearance_t appearance)
+{
+    RETURN_NRF_ERROR(sd_ble_gap_appearance_set((uint16_t)appearance));
+}
+
+bleal_err bleal_start_adv(const bleal_ad_params_t *p_params, const uint8_t *p_adv, const uint8_t adv_len, const uint8_t * p_resp, const uint8_t resp_len)
+{
+    if (p_params) {
+        ble_gap_adv_params_t p;
+        memset(&p, 0, sizeof(p));
+        p.type = p_params->type;
+        p.interval = p_params->adv_interval;
+
+        uint32_t err = sd_ble_gap_adv_data_set(p_adv, adv_len, p_resp, resp_len);
+        if ( NRF_SUCCESS != err) {
+            RETURN_NRF_ERROR(err);
+        }
+        RETURN_NRF_ERROR(sd_ble_gap_adv_start(&p));
+    }
+    return BLEAL_ERR_NOT_IMPLEMENTED;
+}
+
+bleal_err bleal_start_advertisement(const bleal_ad_params_t *p_params, const bleal_ad_data_t *p_ad_data, const uint8_t ad_num, const bleal_ad_data_t * p_resp_data, const uint8_t resp_num)
+{
+    uint8_t adv[31] = {0};
+    uint8_t adv_len = 0;
+    uint8_t resp[31] = {0};
+    uint8_t resp_len = 0;
+
+    bleal_err code = BLEAL_ERR_UNKNOWN;
+    code = bleal_fill_advertisement_buffer(p_ad_data, ad_num, adv, sizeof(adv), &adv_len);
+    if ( BLEAL_ERR_SUCCESS != code ) {
+        return code;
+    }
+
+    code = bleal_fill_advertisement_buffer(p_resp_data, resp_num, resp, sizeof(resp), &resp_len);
+    if ( BLEAL_ERR_SUCCESS != code ) {
+        return code;
+    }
+    return bleal_start_adv(p_params, adv, adv_len, resp, resp_len);
+}
+
+bleal_err bleal_disconnect(const bleal_peer_t *p_peer, const hci_error_code_t error_code)
+{
+    if (p_peer && p_peer->handle) {
+        RETURN_NRF_ERROR(sd_ble_gap_disconnect(*((uint16_t *)p_peer->handle), (uint8_t)error_code));
+    }
+    DEBUG_LOG("peer and peer->handle cannot be NULL\n");
+    return BLEAL_ERR_INVALID_PARAMETER;
 }

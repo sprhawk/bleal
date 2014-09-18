@@ -1,4 +1,4 @@
-/* 
+/* file: hwal.h 
  * Copyright (c) 2014, Yang Hongbo (hongbo@yang.me) 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,8 +19,9 @@
  * THE SOFTWARE.
  */
 
-#ifndef _HW_AL_H_
-#define _HW_AL_H_
+#ifndef _BLEAL_HW_AL_H_
+#define _BLEAL_HW_AL_H_
 
+void bleal_uart_init();
 
-#endif // _HW_AL_H_
+#endif // _BLEAL_HW_AL_H_

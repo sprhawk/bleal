@@ -19,5 +19,16 @@
  * THE SOFTWARE.
  */
 
-#include "bleal/hwal.h"
+#ifndef _BLE_AL_ERR_H_
+#define _BLE_AL_ERR_H_
 
+#include <stdint.h>
+
+typedef uint32_t bleal_err;
+
+#define BLEAL_ERR_SUCCESS           0
+#define BLEAL_ERR_UNKNOWN           1
+#define BLEAL_ERR_INVALID_PARAMETER 2
+#define BLEAL_ERR_NOT_IMPLEMENTED   UINT32_MAX
+
+#endif // _BLE_AL_ERR_H_

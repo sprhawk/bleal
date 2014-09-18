@@ -31,5 +31,12 @@
 #define TIMER_MAX_TIMERS                4
 #define TIMER_OP_QUEUE_SIZE             5
 
+// UART setup copied from nrf51822 EK (pca10001) board definition
+#define RX_PIN_NUMBER  11    // UART RX pin number.
+#define TX_PIN_NUMBER  9    // UART TX pin number.
+#define CTS_PIN_NUMBER 10    // UART Clear To Send pin number. Not used if HWFC is set to false. 
+#define RTS_PIN_NUMBER 8    // UART Request To Send pin number. Not used if HWFC is set to false. 
+#define HWFC           true // UART hardware flow control.
+
 #endif
 
