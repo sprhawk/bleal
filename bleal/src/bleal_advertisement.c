@@ -32,7 +32,7 @@ bleal_err bleal_fill_advertisement_buffer(const bleal_advertisement_data_t *p_da
         for(int i = 0; i < number; i ++) {
             const bleal_advertisement_data_t *p_adv = p_data + i;
             switch( p_adv->type ) {
-                case BLEAL_AD_TYPE_FLAGS:
+                case BLEAL_AD_DATA_TYPE_FLAGS:
                     if ( offset + 3 <= max_len ) {
                         if ( p_buffer ) {
                             *(p_buffer + offset) = 3;
@@ -42,7 +42,7 @@ bleal_err bleal_fill_advertisement_buffer(const bleal_advertisement_data_t *p_da
                         offset += 3;
                     }
                     break;
-                case BLEAL_AD_TYPE_INCOMPLETE_16BIT_SERVICE_UUIDS:
+                case BLEAL_AD_DATA_TYPE_INCOMPLETE_16BIT_SERVICE_UUIDS:
                     if ( offset + 2 + sizeof(bleal_uuid16_t) * p_adv->num <= max_len ) {
                         if ( p_buffer ) {
                             *(p_buffer + offset) = 3;
