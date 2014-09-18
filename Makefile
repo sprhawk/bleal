@@ -9,7 +9,7 @@ INCLUDEPATHS += -I"bleal/src/Soc/nrf51822"
 INCLUDEPATHS += -I"bleal/include"
 C_SOURCE_PATHS += bleal/src
 C_SOURCE_PATHS += bleal/src/SoC/nrf51822
-C_SOURCE_FILES += bleal_interface.c bleal_nrf51822.c bleal_nrf51822_scheduler.c
+C_SOURCE_FILES += bleal.c bleal_nrf51822.c bleal_nrf51822_scheduler.c
 
 TARGET_CHIP := NRF51822_QFAA_CA
 BOARD := BOARD_PCA10001
@@ -25,6 +25,7 @@ USE_SOFTDEVICE := S110
 
 
 CFLAGS += -DBLE_STACK_SUPPORT_REQD
+
 # debug: CFLAGS+=-DENABLE_DEBUG_LOG_SUPPORT
 
 C_SOURCE_FILES += main.c ble_app.c
