@@ -19,10 +19,13 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BLE_AL_INTERFACE_H_
-#define _BLE_AL_INTERFACE_H_
+#ifndef _BLE_AL_ERR_H_
+#define _BLE_AL_ERR_H_
 
-extern void _bleal_initialize(void);
-extern void _bleal_loop(void);
+#include <stdint.h>
 
-#endif // _BLE_AL_INTERFACE_H_
+typedef uint32_t bleal_err;
+
+#define BLEAL_ERR_SUCCESS           0
+
+#endif // _BLE_AL_ERR_H_

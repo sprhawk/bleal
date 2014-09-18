@@ -27,7 +27,7 @@ USE_SOFTDEVICE := S110
 CFLAGS += -DBLE_STACK_SUPPORT_REQD
 # debug: CFLAGS+=-DENABLE_DEBUG_LOG_SUPPORT
 
-C_SOURCE_FILES += main.c
+C_SOURCE_FILES += main.c ble_app.c
 ifeq ($(MAKECMDGOALS),debug) # template for conditional rules
 # C_SOURCE_FILES += uart.c
 endif

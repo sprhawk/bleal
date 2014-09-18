@@ -19,20 +19,14 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BLE_AL_NRF51822_H_
-#define _BLE_AL_NRF51822_H_
+#ifndef _BLE_AL_INTERFACE_H_
+#define _BLE_AL_INTERFACE_H_
 
-#include "nrf.h"
-#include "nrf_sdm.h"
-#include "nrf_soc.h"
+#include "bleal/bleal_err.h"
 
-#include "softdevice_handler.h"
-#include "app_error.h"
+bleal_err _bleal_initialize(void);
+void _bleal_loop(void);
+bleal_err _bleal_start_advertisement(const uint8_t *adv, const uint8_t adv_len, const uint8_t * resp, const uint8_t resp_len);
+bleal_err _bleal_disconnect();
 
-
-
-void _nrf51822_setup();
-
-void _power_manage(void);
-
-#endif // _BLE_AL_NRF51822_H_
+#endif // _BLE_AL_INTERFACE_H_

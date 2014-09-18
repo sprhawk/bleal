@@ -19,5 +19,5 @@
  * THE SOFTWARE.
  */
 
-#include "hwal.h"
+#include "bleal/hwal.h"
 

@@ -19,20 +19,30 @@
  * THE SOFTWARE.
  */
 
-#include "bleal_interface.h"
+#include "bleal/bleal.h"
 
 #include "bleal_nrf51822.h"
-#include "config_nrf51822.h"
 
-void _bleal_initialize(void)
+bleal_err bleal_initialize(void)
 {
-    SOFTDEVICE_HANDLER_INIT(CLOCK_LFCLKSRC_XTAL_VALUE, true);
+    _nrf51822_setup();
+    return BLEAL_ERR_SUCCESS;
 }
 
-void _bleal_loop(void)
+void bleal_loop(void)
 {
     while(1) {
         app_sched_execute();
         _power_manage();
     }
+}
+
+bleal_err bleal_start_advertisement(const uint8_t *adv, const uint8_t adv_len, const uint8_t * resp, const uint8_t resp_len)
+{
+    return BLEAL_ERR_SUCCESS;
+}
+
+bleal_err bleal_disconnect()
+{
+    return BLEAL_ERR_SUCCESS;
 }

@@ -22,13 +22,40 @@
 #include "bleal_nrf51822.h"
 #include <stdio.h>
 
+#include "config_nrf51822.h"
+
+static void sys_on_event_handler(uint32_t evt);
+static void ble_on_event_handler(ble_evt_t * p_ble_evt);
+
 void _nrf51822_setup()
 {
+    ble_enable_params_t bep = { { 1 } };
+    APP_ERROR_CHECK(sd_ble_enable(&bep));
+    SOFTDEVICE_HANDLER_INIT(CLOCK_LFCLKSRC_XTAL_VALUE, true);
+
+    APP_ERROR_CHECK(softdevice_ble_evt_handler_set(ble_on_event_handler));
+    APP_ERROR_CHECK(softdevice_sys_evt_handler_set(sys_on_event_handler));
 }
 
 void _power_manage(void)
 {
         APP_ERROR_CHECK(sd_app_evt_wait());
+}
+
+void sys_on_event_handler(uint32_t evt)
+{
+    switch(evt) {
+        default:
+            break;
+    }
+}
+
+void ble_on_event_handler(ble_evt_t * p_ble_evt)
+{
+    switch(p_ble_evt->header.evt_id) {
+        default:
+            break;
+    }
 }
 
 // error handler

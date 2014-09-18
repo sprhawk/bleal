@@ -22,8 +22,15 @@
 #ifndef _BLE_AL_H_
 #define _BLE_AL_H_
 
-void bleal_initialize();
+#include <stdint.h>
+#include "bleal_err.h"
+
+bleal_err bleal_initialize();
 
 void bleal_loop();
+
+bleal_err bleal_start_advertisement(const uint8_t *adv, const uint8_t adv_len, const uint8_t * resp, const uint8_t resp_len);
+
+bleal_err bleal_disconnect();
 
 #endif // _BLE_AL_H_ 

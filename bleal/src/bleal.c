@@ -19,13 +19,7 @@
  * THE SOFTWARE.
  */
 
-#include "bleal.h"
-
-void bleal_initialize()
-{
-}
-
-void bleal_loop()
-{
-}
+#if defined(NRF51822)
+#include "SoC/nrf51822/ble_interface.c"
+#endif
 

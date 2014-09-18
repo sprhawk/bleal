@@ -21,9 +21,14 @@
 
 #include "bleal/bleal.h"
 
+#include "ble_app.h"
+
 int main()
 {
     bleal_initialize();
+
+    ble_app_initialize();
+    ble_app_start_adv();
 
     bleal_loop();
 }
