@@ -32,8 +32,17 @@ int _write(int file, char *ptr, int len);
 
 int _write(int file, char *ptr, int len)
 {
+    uint8_t last_c = 0;
     for(int i = 0; i < len; i ++) {
-        simple_uart_put((uint8_t)*(ptr + i));
+        uint8_t c = (uint8_t)*(ptr + i);
+        if ('\n' == c && '\r' != last_c) { // automatically output \r\n for single \n
+            simple_uart_put('\r');
+            simple_uart_put('\n');
+        }
+        else {
+            simple_uart_put(c);
+        }
+        last_c = c;
     }
     return len;
 }
