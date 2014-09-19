@@ -24,6 +24,8 @@
 #define _BLE_AL_H_
 
 #include <stdint.h>
+#include <stdbool.h>
+
 #include "bleal/error.h"
 #include "bleal/hci_error.h"
 #include "bleal/appearance.h"
@@ -52,7 +54,7 @@ typedef struct bleal_device_parameters_t {
     bleal_appearance_t appearance;
 }bleal_device_parameters_t, bleal_dev_params_t, * bleal_device_parameters_p, * bleal_dev_params_p;
 
-bleal_err bleal_initialize();
+bleal_err bleal_initialize(bool service_changed);
 
 void bleal_loop();
 

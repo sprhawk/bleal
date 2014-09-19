@@ -45,12 +45,12 @@ bleal_err check_nrf_error(uint32_t err)
     return code;
 }
 
-void _nrf51822_setup()
+void _nrf51822_setup(bool service_changed)
 {
     SOFTDEVICE_HANDLER_INIT(CLOCK_LFCLKSRC_XTAL_VALUE, true);
     APP_SCHED_INIT(SCHEDULER_MAX_EVENT_SIZE, SCHEDULER_QUEUE_SIZE);
 
-    ble_enable_params_t bep = { { 1 } };
+    ble_enable_params_t bep = { { service_changed?1:0 } };
     APP_ERROR_CHECK(sd_ble_enable(&bep));
 
     sys_evt_handler_init();

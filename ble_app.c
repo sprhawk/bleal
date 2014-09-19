@@ -13,7 +13,7 @@ void ble_app_stop_adv(void);
 
 void ble_app_initialize(void)
 {
-    bleal_initialize();
+    bleal_initialize(false);
 
     bleal_device_parameters_t dev_params;
     memset(&dev_params, 0, sizeof(dev_params));

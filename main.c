@@ -20,6 +20,8 @@
  */
 
 #include "bleal/bleal.h"
+#include "bleal/hwal.h"
+#include "bleal/log.h"
 
 #include "ble_app.h"
 

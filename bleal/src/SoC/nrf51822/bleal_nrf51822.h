@@ -34,13 +34,14 @@
 #include "app_scheduler.h"
 #include "app_timer.h"
 
+#include "bleal/bleal.h"
 #include "bleal/error.h"
 
 #define RETURN_NRF_ERROR(err)  return check_nrf_error(err)
 
 bleal_err check_nrf_error(uint32_t err);
 
-void _nrf51822_setup();
+void _nrf51822_setup(bool change_service);
 
 void _power_manage(void);
 

@@ -30,9 +30,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-bleal_err bleal_initialize(void)
+bleal_err bleal_initialize(bool service_changed)
 {
-    _nrf51822_setup();
+    _nrf51822_setup(service_changed);
     return BLEAL_ERR_SUCCESS;
 }
 
