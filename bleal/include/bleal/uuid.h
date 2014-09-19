@@ -25,10 +25,15 @@
 #ifndef _BLEAL_UUID_H_
 #define _BLEAL_UUID_H_
 
+#include "byteorder.h"
+
 typedef uint16_t bleal_uuid16_t;
 
 typedef union bleal_uuid128_t {
     uint8_t data[16];
 } bleal_uuid128_t;
+
+#define uuid16_lo(u) lobyte(u)
+#define uuid16_hi(u) hibyte(u)
 
 #endif // _BLEAL_UUID_H_

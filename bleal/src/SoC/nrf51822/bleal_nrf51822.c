@@ -25,9 +25,11 @@
 #include <stdio.h>
 
 // BLE AL headers
-#include "config_nrf51822.h"
 #include "bleal_nrf51822_sys_handler.h"
 #include "bleal/log.h"
+
+
+#include "config_nrf51822.h"
 
 static void ble_on_event_handler(ble_evt_t * p_ble_evt);
 
@@ -46,9 +48,11 @@ bleal_err check_nrf_error(uint32_t err)
 
 void _nrf51822_setup()
 {
+    SOFTDEVICE_HANDLER_INIT(CLOCK_LFCLKSRC_XTAL_VALUE, true);
+    APP_SCHED_INIT(SCHEDULER_MAX_EVENT_SIZE, SCHEDULER_QUEUE_SIZE);
+
     ble_enable_params_t bep = { { 1 } };
     APP_ERROR_CHECK(sd_ble_enable(&bep));
-    SOFTDEVICE_HANDLER_INIT(CLOCK_LFCLKSRC_XTAL_VALUE, true);
 
     sys_evt_handler_init();
     APP_ERROR_CHECK(softdevice_ble_evt_handler_set(ble_on_event_handler));

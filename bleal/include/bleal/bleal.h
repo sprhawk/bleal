@@ -57,7 +57,7 @@ bleal_err bleal_initialize();
 void bleal_loop();
 
 bleal_err bleal_start_adv(const bleal_ad_params_t *params, const uint8_t *p_adv, const uint8_t adv_len, const uint8_t * p_resp, const uint8_t resp_len);
-bleal_err bleal_start_advertisement(const bleal_ad_params_t *params, const bleal_ad_data_t *p_ad_data, const uint8_t ad_num, const bleal_ad_data_t * p_resp_data, const uint8_t resp_num);
+bleal_err bleal_start_advertising(const bleal_ad_params_t *params, const bleal_ad_data_t *p_ad_data, const uint8_t ad_num, const bleal_ad_data_t * p_resp_data, const uint8_t resp_num);
 
 bleal_err bleal_setup_ble_device(const bleal_device_parameters_t *p_device_parameters);
 bleal_err bleal_setup_device_name(const uint8_t *p_device_name, const uint16_t len);

@@ -110,7 +110,7 @@ bleal_err bleal_start_adv(const bleal_ad_params_t *p_params, const uint8_t *p_ad
     return BLEAL_ERR_NOT_IMPLEMENTED;
 }
 
-bleal_err bleal_start_advertisement(const bleal_ad_params_t *p_params, const bleal_ad_data_t *p_ad_data, const uint8_t ad_num, const bleal_ad_data_t * p_resp_data, const uint8_t resp_num)
+bleal_err bleal_start_advertising(const bleal_ad_params_t *p_params, const bleal_ad_data_t *p_ad_data, const uint8_t ad_num, const bleal_ad_data_t * p_resp_data, const uint8_t resp_num)
 {
     uint8_t adv[31] = {0};
     uint8_t adv_len = 0;
@@ -118,14 +118,18 @@ bleal_err bleal_start_advertisement(const bleal_ad_params_t *p_params, const ble
     uint8_t resp_len = 0;
 
     bleal_err code = BLEAL_ERR_UNKNOWN;
-    code = bleal_fill_advertisement_buffer(p_ad_data, ad_num, adv, sizeof(adv), &adv_len);
-    if ( BLEAL_ERR_SUCCESS != code ) {
-        return code;
+    if (p_ad_data && ad_num > 0 ) {
+        code = bleal_fill_advertisement_buffer(p_ad_data, ad_num, adv, sizeof(adv), &adv_len);
+        if ( BLEAL_ERR_SUCCESS != code ) {
+            return code;
+        }
     }
 
-    code = bleal_fill_advertisement_buffer(p_resp_data, resp_num, resp, sizeof(resp), &resp_len);
-    if ( BLEAL_ERR_SUCCESS != code ) {
-        return code;
+    if (p_resp_data && resp_num > 0 ) {
+        code = bleal_fill_advertisement_buffer(p_resp_data, resp_num, resp, sizeof(resp), &resp_len);
+        if ( BLEAL_ERR_SUCCESS != code ) {
+            return code;
+        }
     }
     return bleal_start_adv(p_params, adv, adv_len, resp, resp_len);
 }

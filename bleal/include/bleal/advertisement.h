@@ -77,7 +77,7 @@ typedef enum bleal_advertisement_data_type_t {
 #define BLEAL_RESERVED_BIT6                 ( 1 << 6 )
 #define BLEAL_RESERVED_BIT7                 ( 1 << 7 )
 
-#define BLEAL_LE_MODE ( BLEAL_LE_GENERAL_DISCOVERABLE_MODE | BLEAL_BR_EDR_NOT_SUPPORTED )
+#define BLEAL_LE_ONLY_GENERAL_MODE ( BLEAL_LE_GENERAL_DISCOVERABLE_MODE | BLEAL_BR_EDR_NOT_SUPPORTED )
 
 typedef struct bleal_advertisement_data_t {
     bleal_ad_data_type_t type;
@@ -85,6 +85,7 @@ typedef struct bleal_advertisement_data_t {
     union {
         uint8_t flags;
         void * p_list;
+        bleal_uuid16_t * p_uuid16_list;
         uint8_t *p_local_name;
         uint8_t *data;
         int8_t tx_power; 

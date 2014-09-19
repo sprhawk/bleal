@@ -27,12 +27,17 @@
 
 #include <machine/endian.h>
 
-#define swap_word(word) (((x & 0xff00) >> 8) | ((x & 0xff) << 8))
 // host byte order to little endian byte order
 #if BYTE_ORDER == LITTLE_ENDIAN
-#define htol16(word) word
+#define hibyte(word) ( (uint8_t) ( word & 0xff00 ) >> 8 )
+#define lobyte(word) ( (uint8_t) (word & 0xff ) )
+#define htol16(word) (word)
 #else
+#define hibyte(word) ( (uint8_t) ( word & 0xff00 ) )
+#define lobyte(word) ( (uint8_t) (word & 0xff ) )
 #define htol16(word) swap_word(word)
 #endif
+
+#define swap_bytes(word) ( (uint16_t) ( ( (x & 0xff00 ) >> 8 ) | ( ( x & 0xff ) << 8) ) )
 
 #endif // _BLE_AL_BYTEORDER_H_
