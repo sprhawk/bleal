@@ -25,6 +25,9 @@
 
 int main()
 {
+    bleal_uart_init();
+    bleal_log("a\nb\nc\nd\ne\nf\n");
+
     ble_app_initialize();
     ble_app_start();
 

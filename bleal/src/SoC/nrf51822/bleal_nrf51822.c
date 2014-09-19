@@ -26,12 +26,11 @@
 
 // BLE AL headers
 #include "bleal_nrf51822_sys_handler.h"
+#include "bleal_ble_event_handler.h"
+
 #include "bleal/log.h"
 
-
 #include "config_nrf51822.h"
-
-static void ble_on_event_handler(ble_evt_t * p_ble_evt);
 
 bleal_err check_nrf_error(uint32_t err)
 {
@@ -63,14 +62,6 @@ void _power_manage(void)
     APP_ERROR_CHECK(sd_app_evt_wait());
 }
 
-
-void ble_on_event_handler(ble_evt_t * p_ble_evt)
-{
-    switch(p_ble_evt->header.evt_id) {
-        default:
-            break;
-    }
-}
 
 // error handler
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name)

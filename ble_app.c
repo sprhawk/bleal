@@ -13,9 +13,6 @@ void ble_app_stop_adv(void);
 
 void ble_app_initialize(void)
 {
-    bleal_uart_init();
-
-    bleal_log("a\nb\nc\nd\ne\nf\n");
     bleal_initialize();
 
     bleal_device_parameters_t dev_params;
