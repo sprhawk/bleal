@@ -48,13 +48,16 @@ typedef struct bleal_connection_parameters_t {
 typedef struct bleal_device_parameters_t {
     uint8_t *p_device_name;
     uint16_t device_name_len;
-    bleal_connection_parameters_t parameters;
+    bleal_connection_parameters_t connection;
     bleal_appearance_t appearance;
 }bleal_device_parameters_t, bleal_dev_params_t, * bleal_device_parameters_p, * bleal_dev_params_p;
 
 bleal_err bleal_initialize();
 
 void bleal_loop();
+
+bleal_err bleal_set_tx_power(const int8_t power_level);
+bleal_err bleal_get_tx_power(int8_t * p_power_level);
 
 bleal_err bleal_start_adv(const bleal_ad_params_t *params, const uint8_t *p_adv, const uint8_t adv_len, const uint8_t * p_resp, const uint8_t resp_len);
 bleal_err bleal_start_advertising(const bleal_ad_params_t *params, const bleal_ad_data_t *p_ad_data, const uint8_t ad_num, const bleal_ad_data_t * p_resp_data, const uint8_t resp_num);

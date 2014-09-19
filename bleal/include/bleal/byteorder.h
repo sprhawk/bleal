@@ -29,12 +29,12 @@
 
 // host byte order to little endian byte order
 #if BYTE_ORDER == LITTLE_ENDIAN
-#define hibyte(word) ( (uint8_t) ( word & 0xff00 ) >> 8 )
+#define hibyte(word) ( (uint8_t) (( word & 0xff00 ) >> 8 ))
 #define lobyte(word) ( (uint8_t) (word & 0xff ) )
 #define htol16(word) (word)
 #else
 #define hibyte(word) ( (uint8_t) ( word & 0xff00 ) )
-#define lobyte(word) ( (uint8_t) (word & 0xff ) )
+#define lobyte(word) ( (uint8_t) ((word & 0xff ) << 8 )
 #define htol16(word) swap_word(word)
 #endif
 

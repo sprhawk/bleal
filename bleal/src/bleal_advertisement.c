@@ -48,6 +48,7 @@ bleal_err bleal_fill_advertisement_buffer(const bleal_advertisement_data_t *p_da
                     }
                     break;
                 case BLEAL_AD_DATA_TYPE_INCOMPLETE_16BIT_SERVICE_UUIDS:
+                case BLEAL_AD_DATA_TYPE_COMPLETE_16BIT_SERVICE_UUIDS:
                     {
                         const uint8_t _l = 2 + sizeof(bleal_uuid16_t) * p_adv->num;
                         if ( offset + _l <= max_len ) {
@@ -56,8 +57,8 @@ bleal_err bleal_fill_advertisement_buffer(const bleal_advertisement_data_t *p_da
                                 *(p_buffer + offset + 1) = p_adv->type;
                                 for ( int i = 0; i < p_adv->num; i ++ ) {
                                     bleal_uuid16_t u = *(p_adv->field.p_uuid16_list + i);
-                                    *(p_buffer + offset + 2 + i) = uuid16_lo(u);
-                                    *(p_buffer + offset + 2 + i + 1) = uuid16_hi(u);
+                                    *(p_buffer + offset + 2 + i * 2) = uuid16_lo(u);
+                                    *(p_buffer + offset + 2 + i * 2 + 1) = uuid16_hi(u);
                                 }
                             }
                             offset += _l;

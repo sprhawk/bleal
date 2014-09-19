@@ -44,11 +44,19 @@ void bleal_loop(void)
     }
 }
 
+bleal_err bleal_set_tx_power(const int8_t power_level)
+{
+}
+
+bleal_err bleal_get_tx_power(int8_t * p_power_level)
+{
+}
+
 bleal_err bleal_setup_ble_device(const bleal_device_parameters_t *p_device_parameters)
 {
     bleal_err code = BLEAL_ERR_UNKNOWN;
     if(p_device_parameters) {
-        code = bleal_setup_connection_parameters(&p_device_parameters->parameters);
+        code = bleal_setup_connection_parameters(&p_device_parameters->connection);
         if (BLEAL_ERR_SUCCESS != code) {
             return code;
         }

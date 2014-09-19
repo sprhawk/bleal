@@ -1,4 +1,7 @@
-/* 
+/* File: config.h
+ * Author: YangHongbo<hongbo@yang.me>
+ * Created at: Sep 19th, 2014
+ *
  * Copyright (c) 2014, Yang Hongbo (hongbo@yang.me) 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -19,14 +22,23 @@
  * THE SOFTWARE.
  */
 
-#include "bleal/bleal.h"
+#ifndef _CONFIG_H_
+#define _CONFIG_H_
 
-#include "ble_app.h"
+#include "bleal/assigned_number.h"
+// BLE related
+#define BLE_DEVICE_NAME "BLE AL DEMO"
+#define BLE_MANUFACTURE_NAME "yang.me"
+#define BLE_MODEL_NUM "BLE AL 1"
+#define BLE_DEVICE_DEFAULT_TX_POWER 0
 
-int main()
-{
-    ble_app_initialize();
-    ble_app_start();
+// BLE gap related
+#define BLE_CONN_MIN_INTERVAL 80 // 80 * 1.25 ms = 100 ms
+#define BLE_CONN_MAX_INTERVAL 800 // 800 * 1.25ms = 1 s //BLE_GAP_CP_MAX_CONN_INTVL_MAX
+#define BLE_CONN_SLAVE_LATENCY 0
+#define BLE_CONN_SUPERVISION_TIMEOUT 100 // * 10ms
 
-    bleal_loop();
-}
+#define BLE_ADVERTISED_SERVICE_UUID_16BIT BLEAL_TX_POWER_SERVICE
+
+#endif
+

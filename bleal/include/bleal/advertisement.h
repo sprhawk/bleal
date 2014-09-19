@@ -84,8 +84,8 @@ typedef struct bleal_advertisement_data_t {
     uint8_t num; // number of p_list, or length of local name or number of bytes of data
     union {
         uint8_t flags;
-        void * p_list;
         bleal_uuid16_t * p_uuid16_list;
+        bleal_uuid128_t * p_uuid128_list;
         uint8_t *p_local_name;
         uint8_t *data;
         int8_t tx_power; 
