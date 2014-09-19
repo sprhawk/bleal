@@ -142,6 +142,11 @@ bleal_err bleal_start_advertising(const bleal_ad_params_t *p_params, const bleal
     return bleal_start_adv(p_params, adv, adv_len, resp, resp_len);
 }
 
+bleal_err bleal_stop_advertising(void)
+{
+    RETURN_NRF_ERROR(sd_ble_gap_adv_stop());
+}
+
 bleal_err bleal_disconnect(const bleal_peer_t *p_peer, const hci_error_code_t error_code)
 {
     if (p_peer && p_peer->handle) {
