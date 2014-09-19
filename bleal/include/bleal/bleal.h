@@ -64,9 +64,16 @@ bleal_err bleal_start_advertising(const bleal_ad_params_t *params, const bleal_a
 bleal_err bleal_stop_advertising(void);
 
 bleal_err bleal_setup_ble_device(const bleal_device_parameters_t *p_device_parameters);
-bleal_err bleal_setup_device_name(const uint8_t *p_device_name, const uint16_t len);
-bleal_err bleal_setup_connection_parameters(const bleal_connection_parameters_t *p_connection_parameters);
-bleal_err bleal_setup_appearance(const bleal_appearance_t appearance);
+
+bleal_err bleal_set_device_name(const uint8_t *p_device_name, const uint16_t len);
+bleal_err bleal_get_device_name(uint8_t *p_device_name, const uint16_t max_len, uint16_t *p_len);
+
+bleal_err bleal_set_connection_parameters(const bleal_connection_parameters_t *p_connection_parameters);
+bleal_err bleal_get_connection_parameters(bleal_connection_parameters_t *p_connection_parameters);
+
+bleal_err bleal_set_appearance(const bleal_appearance_t appearance);
+bleal_err bleal_get_appearance(bleal_appearance_t * p_appearance);
+
 bleal_err bleal_disconnect(const bleal_peer_t *p_peer, const hci_error_code_t error_code);
 
 #endif // _BLE_AL_H_ 

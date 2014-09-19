@@ -17,25 +17,14 @@ void ble_app_initialize(void)
 
     bleal_log("a\nb\nc\nd\ne\nf\n");
     bleal_initialize();
-}
 
-void ble_app_start(void)
-{
-    ble_app_start_adv();
-}
-
-void ble_app_start_adv(void)
-{
-    bleal_ad_data_t ad[3];
     bleal_device_parameters_t dev_params;
-
-    const char* name = "ble al demo";
-    const uint16_t name_len = strlen(name);
-
-    memset(ad, 0, sizeof(ad));
     memset(&dev_params, 0, sizeof(dev_params));
 
-    bleal_log("local name:%s\n", name);
+    const char* name = BLE_DEVICE_NAME;
+    const uint16_t name_len = strlen(name);
+
+    bleal_log("device name:%s\n", name);
 
     // setup device parameters;
     dev_params.p_device_name = (uint8_t *)name;
@@ -47,18 +36,36 @@ void ble_app_start_adv(void)
     dev_params.connection.connection_supervision_timeout = BLE_CONN_SUPERVISION_TIMEOUT;
 
     bleal_setup_ble_device(&dev_params);
+}
+
+void ble_app_start(void)
+{
+    ble_app_start_adv();
+}
+
+void ble_app_start_adv(void)
+{
+    bleal_ad_data_t ad[4];
+
+    memset(ad, 0, sizeof(ad));
 
     ad[0].type = BLEAL_AD_DATA_TYPE_FLAGS;
     ad[0].field.flags = BLEAL_LE_ONLY_GENERAL_MODE;
 
-    ad[1].type = BLEAL_AD_DATA_TYPE_SHORTENED_LOCAL_NAME;
-    ad[1].field.p_local_name = (uint8_t *)name;
-    ad[1].num = strlen(name);
+    ad[1].type = BLEAL_AD_DATA_TYPE_COMPLETE_LOCAL_NAME;
+    ad[1].num = 0;
+    // ad[1].num = strlen(BLE_DEVICE_NAME);
+    // ad[1].field.p_local_name = BLE_DEVICE_NAME;
 
     ad[2].type = BLEAL_AD_DATA_TYPE_COMPLETE_16BIT_SERVICE_UUIDS;
     bleal_uuid16_t uuids[1] = {0x1804};
     ad[2].field.p_uuid16_list = uuids;
     ad[2].num = sizeof(uuids) / sizeof(bleal_uuid16_t);
+
+    ad[3].type = BLEAL_AD_DATA_TYPE_TX_POWER_LEVEL;
+    ad[3].num = 0;
+    // ad[3].num = 1;
+    // ad[3].field.tx_power = -20;
 
     bleal_ad_params_t params;
     memset(&params, 0, sizeof(params));
@@ -69,4 +76,5 @@ void ble_app_start_adv(void)
 
 void ble_app_stop_adv(void)
 {
+    bleal_stop_advertising();
 }

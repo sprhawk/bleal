@@ -45,6 +45,9 @@ bleal_err bleal_fill_advertisement_buffer(const bleal_advertisement_data_t *p_da
                             }
                             offset += _l;
                         }
+                        else {
+                            return BLEAL_ERR_NOT_ENOUGH_BUFFER;
+                        }
                     }
                     break;
                 case BLEAL_AD_DATA_TYPE_INCOMPLETE_16BIT_SERVICE_UUIDS:
@@ -63,23 +66,83 @@ bleal_err bleal_fill_advertisement_buffer(const bleal_advertisement_data_t *p_da
                             }
                             offset += _l;
                         }
+                        else {
+                            return BLEAL_ERR_NOT_ENOUGH_BUFFER;
+                        }
                     }
                     break;
                 case BLEAL_AD_DATA_TYPE_SHORTENED_LOCAL_NAME:
+                case BLEAL_AD_DATA_TYPE_COMPLETE_LOCAL_NAME:
                     {
-                        const uint8_t _l = 2 + sizeof(uint8_t) * p_adv->num;
+                        if ( p_adv->num ) {
+                            const uint8_t _l = 2 + sizeof(uint8_t) * p_adv->num;
+                            if ( offset + _l <= max_len ) {
+                                if ( p_buffer ) {
+                                    *(p_buffer + offset) = _l - 1;
+                                    *(p_buffer + offset + 1) = p_adv->type;
+                                    uint8_t len = p_adv->num;
+                                    // process by lib or user ?
+                                    // if (0 == *(p_adv->field.p_local_name + len)) {
+                                    //     len --; // remove useless \n
+                                    // }
+                                    memcpy(p_buffer + offset + 2, p_adv->field.p_local_name, len);
+                                }
+                                offset += _l;
+                            }
+                            else {
+                                return BLEAL_ERR_NOT_ENOUGH_BUFFER;
+                            }
+                        }
+                        else {
+                            if ( offset + 2 < max_len ) {
+                                bleal_err err;
+                                uint16_t len = max_len - offset - 2;
+                                if ( p_buffer ) {
+                                    uint8_t *p = p_buffer + offset + 2;
+                                    err = bleal_get_device_name(p , len, &len);
+                                    if ( BLEAL_ERR_SUCCESS != err ) {
+                                        return err;
+                                    }
+                                    *(p_buffer + offset) = len + 1; // add type byte
+                                    *(p_buffer + offset + 1) = p_adv->type;
+                                }
+                                else {
+                                    err = bleal_get_device_name(NULL, 0, &len);
+                                    if ( BLEAL_ERR_SUCCESS != err ) {
+                                        return err;
+                                    }
+                                }
+                                offset += 2 + len;
+                            }
+                            else {
+                                return BLEAL_ERR_NOT_ENOUGH_BUFFER;
+                            }
+                        }
+                    }
+                    break;
+                case BLEAL_AD_DATA_TYPE_TX_POWER_LEVEL:
+                    {
+                        const uint8_t _l = 3;
                         if ( offset + _l <= max_len ) {
                             if ( p_buffer ) {
-                                *(p_buffer + offset) = _l - 1;
-                                *(p_buffer + offset + 1) = p_adv->type;
-                                uint8_t len = p_adv->num;
-                                // process by lib or user ?
-                                // if (0 == *(p_adv->field.p_local_name + len)) {
-                                //     len --; // remove useless \n
-                                // }
-                                memcpy(p_buffer + offset + 2, p_adv->field.p_local_name, len);
+                                *( p_buffer + offset ) = _l - 1;
+                                *( p_buffer + offset + 1 ) = p_adv->type;
+                                int8_t level = 0;
+                                if ( p_adv->num ) {
+                                   level = p_adv->field.tx_power; 
+                                }
+                                else {
+                                   bleal_err err = bleal_get_tx_power(&level);
+                                   if ( BLEAL_ERR_SUCCESS != err ) {
+                                        return err;
+                                   }
+                                }
+                                *( p_buffer + offset + 2 ) = (uint8_t)level;
                             }
                             offset += _l;
+                        }
+                        else {
+                            return BLEAL_ERR_NOT_ENOUGH_BUFFER;
                         }
                     }
                     break;

@@ -46,34 +46,41 @@ void bleal_loop(void)
 
 bleal_err bleal_set_tx_power(const int8_t power_level)
 {
+    RETURN_NRF_ERROR(sd_ble_gap_tx_power_set(power_level));
 }
 
 bleal_err bleal_get_tx_power(int8_t * p_power_level)
 {
+    if ( p_power_level ) {
+        int8_t p = (int8_t)NRF_RADIO->TXPOWER;
+        *p_power_level = p;
+        return BLEAL_ERR_SUCCESS;
+    }
+    return BLEAL_ERR_INVALID_PARAMETER;
 }
 
 bleal_err bleal_setup_ble_device(const bleal_device_parameters_t *p_device_parameters)
 {
     bleal_err code = BLEAL_ERR_UNKNOWN;
     if(p_device_parameters) {
-        code = bleal_setup_connection_parameters(&p_device_parameters->connection);
+        code = bleal_set_connection_parameters(&p_device_parameters->connection);
         if (BLEAL_ERR_SUCCESS != code) {
             return code;
         }
         if (p_device_parameters->p_device_name && p_device_parameters->device_name_len > 0) {
-            code = bleal_setup_device_name(p_device_parameters->p_device_name, p_device_parameters->device_name_len);
+            code = bleal_set_device_name(p_device_parameters->p_device_name, p_device_parameters->device_name_len);
         }
         if (BLEAL_ERR_SUCCESS != code) {
             return code;
         }
-        code = bleal_setup_appearance(p_device_parameters->appearance);
+        code = bleal_set_appearance(p_device_parameters->appearance);
         return code;
     }
     DEBUG_LOG("p_device_parameters cannot be NULL\n");
     return BLEAL_ERR_INVALID_PARAMETER;
 }
 
-bleal_err bleal_setup_connection_parameters(const bleal_connection_parameters_t *p_connection_parameters)
+bleal_err bleal_set_connection_parameters(const bleal_connection_parameters_t *p_connection_parameters)
 {
     ble_gap_conn_params_t conn_params;
     memset(&conn_params, 0, sizeof(conn_params));
@@ -85,10 +92,33 @@ bleal_err bleal_setup_connection_parameters(const bleal_connection_parameters_t 
     conn_params.conn_sup_timeout = cp->connection_supervision_timeout;
 
     RETURN_NRF_ERROR(sd_ble_gap_ppcp_set(&conn_params));
-    return BLEAL_ERR_NOT_IMPLEMENTED;
 }
 
-bleal_err bleal_setup_device_name(const uint8_t *p_device_name, const uint16_t len)
+bleal_err bleal_get_connection_parameters(bleal_connection_parameters_t *p_connection_parameters)
+{
+    if ( p_connection_parameters ) {
+        ble_gap_conn_params_t conn_params;
+        memset(&conn_params, 0, sizeof(conn_params));
+        uint32_t err = sd_ble_gap_ppcp_set(&conn_params);
+        if ( NRF_SUCCESS == err ) {
+            bleal_conn_params_t *cp = p_connection_parameters;
+            cp->min_connection_interval = conn_params.min_conn_interval;
+            cp->max_connection_interval = conn_params.max_conn_interval;
+            cp->slave_latency = conn_params.slave_latency;
+            cp->connection_supervision_timeout = conn_params.conn_sup_timeout;
+            return BLEAL_ERR_SUCCESS;
+        }
+        else {
+            RETURN_NRF_ERROR(err);
+        }
+    }
+    else {
+        return BLEAL_ERR_INVALID_PARAMETER;
+    }
+
+}
+
+bleal_err bleal_set_device_name(const uint8_t *p_device_name, const uint16_t len)
 {
     ble_gap_conn_sec_mode_t sec_mode;
     memset(&sec_mode, 0, sizeof(sec_mode));
@@ -96,9 +126,32 @@ bleal_err bleal_setup_device_name(const uint8_t *p_device_name, const uint16_t l
     RETURN_NRF_ERROR(sd_ble_gap_device_name_set(&sec_mode, p_device_name, len));
 }
 
-bleal_err bleal_setup_appearance(const bleal_appearance_t appearance)
+bleal_err bleal_get_device_name(uint8_t *p_device_name, const uint16_t max_len, uint16_t *p_len)
+{
+    uint16_t len = max_len;
+    uint32_t err = sd_ble_gap_device_name_get(p_device_name, &len);
+    if ( NRF_SUCCESS == err ) {
+        if ( p_len ) {
+            *p_len = len;
+        }
+        return BLEAL_ERR_SUCCESS;
+    }
+    RETURN_NRF_ERROR(err);
+}
+
+bleal_err bleal_set_appearance(const bleal_appearance_t appearance)
 {
     RETURN_NRF_ERROR(sd_ble_gap_appearance_set((uint16_t)appearance));
+}
+
+bleal_err bleal_get_appearance(bleal_appearance_t *p_appearance)
+{
+    if ( p_appearance ) {
+        RETURN_NRF_ERROR(sd_ble_gap_appearance_get((uint16_t *)p_appearance));
+    }
+    else {
+        return BLEAL_ERR_INVALID_PARAMETER;
+    }
 }
 
 bleal_err bleal_start_adv(const bleal_ad_params_t *p_params, const uint8_t *p_adv, const uint8_t adv_len, const uint8_t * p_resp, const uint8_t resp_len)
