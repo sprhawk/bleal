@@ -60,7 +60,7 @@ void _nrf51822_setup()
 
 void _power_manage(void)
 {
-        APP_ERROR_CHECK(sd_app_evt_wait());
+    APP_ERROR_CHECK(sd_app_evt_wait());
 }
 
 
