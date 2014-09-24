@@ -1,6 +1,6 @@
-/* File: uuid.h
+/* File: gatt.h
  * Author: YangHongbo<hongbo@yang.me>
- * Created at: Sep 18th, 2014
+ * Created at: Sep 24th, 2014
  *
  * Copyright (c) 2014, Yang Hongbo (hongbo@yang.me) 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,28 +22,8 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BLEAL_UUID_H_
-#define _BLEAL_UUID_H_
+#ifndef _BLE_AL_GATT_H_
+#define _BLE_AL_GATT_H_
 
-#include "byteorder.h"
+#endif // _BLE_AL_GATT_H_
 
-typedef enum bleal_uuid_type_t {
-    BLEAL_UUID_16BIT = 16,
-    BLEAL_UUID_128BIT = 128,
-}bleal_uuid_type_t;
-
-typedef uint16_t bleal_uuid16_t;
-
-typedef union bleal_uuid128_t {
-    uint8_t data[16];
-} bleal_uuid128_t;
-
-#define uuid16_lo(u) lobyte(u)
-#define uuid16_hi(u) hibyte(u)
-
-typedef struct blea_uuid_t {
-    bleal_uuid_type_t type;
-    void * uuid;
-}blea_uuid_t;
-
-#endif // _BLEAL_UUID_H_
