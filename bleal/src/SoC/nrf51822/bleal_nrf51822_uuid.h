@@ -1,6 +1,6 @@
-/* File: byteorder.h
+/* File: bleal_nrf51822_uuid.h
  * Author: YangHongbo<hongbo@yang.me>
- * Created at: Sep 18th, 2014
+ * Created at: Sep 25th, 2014
  *
  * Copyright (c) 2014, Yang Hongbo (hongbo@yang.me) 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -22,23 +22,12 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BLE_AL_BYTEORDER_H_
-#define _BLE_AL_BYTEORDER_H_
+#ifndef _BLEAL_NRF51822_UUID_H_
+#define _BLEAL_NRF51822_UUID_H_
 
-#include <machine/endian.h>
+#include "bleal/uuid.h"
+#include "ble_uuid.h"
 
-// host byte order to little endian byte order
-#if BYTE_ORDER == LITTLE_ENDIAN
-#define hibyte(word) ( (uint8_t) (( word & 0xff00 ) >> 8 ))
-#define lobyte(word) ( (uint8_t) (word & 0xff ) )
-#define htol16(word) (word)
-#else
-#define hibyte(word) ( (uint8_t) ( word & 0xff00 ) )
-#define lobyte(word) ( (uint8_t) ((word & 0xff ) << 8 )
-#define htol16(word) swap_word(word)
-#endif
+bleal_err bleal_encode_uuid(ble_uuid_t *p_out_uuid, const bleal_uuid_t *p_in_uuid);
 
-#define bytetoword(hi, lo) ((((uint16_t)hi) << 8) | lo)
-#define swap_bytes(word) ( (uint16_t) ( ( (x & 0xff00 ) >> 8 ) | ( ( x & 0xff ) << 8) ) )
-
-#endif // _BLE_AL_BYTEORDER_H_
+#endif // _BLEAL_NRF51822_UUID_H_

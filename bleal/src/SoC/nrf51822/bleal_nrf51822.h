@@ -38,6 +38,7 @@
 #include "bleal/error.h"
 
 #define RETURN_NRF_ERROR(err)  return check_nrf_error(err)
+#define RETURN_IF_NRF_ERROR(err)  if(NRF_SUCCESS == err) {return check_nrf_error(err);}
 
 bleal_err check_nrf_error(uint32_t err);
 
