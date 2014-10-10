@@ -26,7 +26,7 @@
 #define _BLEAL_NRF51822_UUID_H_
 
 #include "bleal/uuid.h"
-#include "ble_uuid.h"
+#include "ble_types.h"
 
 bleal_err bleal_encode_uuid(ble_uuid_t *p_out_uuid, const bleal_uuid_t *p_in_uuid);
 

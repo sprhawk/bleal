@@ -82,7 +82,7 @@ typedef enum bleal_gatt_type_t
     BLEAL_GATT_CHARACTERISTIC_USER_DESCRIPTION = 0x2901,
     BLEAL_GATT_CHAR_USER_DESC = BLEAL_GATT_CHARACTERISTIC_USER_DESCRIPTION,
     BLEAL_GATT_CLIENT_CHARACTERISTIC_CONFIGURATION = 0x2902,
-    BLEAL_GATT_CLIENT_CHAR_CONF = BLEAL_GATT_SERVER_CHARACTERISTIC_CONFIGURATION,
+    BLEAL_GATT_CLIENT_CHAR_CONF = BLEAL_GATT_CLIENT_CHARACTERISTIC_CONFIGURATION,
     BLEAL_GATT_CHARACTERISTIC_FORMAT = 0x2904,
     BLEAL_GATT_CHAR_FORMAT = BLEAL_GATT_CHARACTERISTIC_FORMAT,
     BLEAL_GATT_CHARACTERISTIC_AGGREGATE_FORMAT = 0x2905,
@@ -163,6 +163,10 @@ typedef struct bleal_gatt_characteristic_definition_t
 
     void *p_value;
     uint16_t value_length;
+    uint16_t value_max_length;
+
+    bleal_gatt_characteristic_descriptor_t *p_descriptors;
+    uint16_t descriptors_num;
 } bleal_gatt_characteristic_definition_t, bleal_gatt_characteristic_t;
 
 // refer: Bluetooth Core Specification 4.1 Volume 3 Part G. 3.1
@@ -173,14 +177,14 @@ typedef struct bleal_gatt_service_definition_t
     bleal_uuid_t uuid;
     struct bleal_gatt_service_definition_t *p_included_services;
     uint16_t included_services_num;
-    struct bleal_gatt_characteristic_definition_t *p_characterisitcs;
+    struct bleal_gatt_characteristic_definition_t *p_characteristics;
     uint16_t characteristics_num;
     bleal_gatt_permission_t permission;
 } bleal_gatt_service_definition_t, bleal_gatt_service_t;
 
 bleal_err bleal_gatt_add_service(const bleal_gatt_service_t *p_service);
-bleal_err bleal_gatt_add_characteristic(const bleal_gatt_characteristic_t *p_characteristic);
-bleal_err bleal_gatt_add_characteristic_descriptior(const bleal_gatt_characteristi_descriptorc_t *p_descriptor);
+bleal_err bleal_gatt_add_characteristic(const uint16_t service_handle, const bleal_gatt_characteristic_t *p_characteristic);
+bleal_err bleal_gatt_add_characteristic_descriptior(const uint16_t characteristic_handle, const bleal_gatt_characteristic_descriptor_t *p_descriptor);
 
 #endif // _BLE_AL_GATT_H_
 

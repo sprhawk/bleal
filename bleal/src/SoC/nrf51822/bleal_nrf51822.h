@@ -30,15 +30,17 @@
 #include "softdevice_handler.h"
 #include "app_error.h"
 
+#include "ble_types.h"
 #include "ble_gap.h"
 #include "app_scheduler.h"
 #include "app_timer.h"
 
 #include "bleal/bleal.h"
 #include "bleal/error.h"
+#include "bleal/log.h"
 
-#define RETURN_NRF_ERROR(err)  return check_nrf_error(err)
-#define RETURN_IF_NRF_ERROR(err)  if(NRF_SUCCESS == err) {return check_nrf_error(err);}
+#define RETURN_NRF_ERROR(err)  do{DEBUG_LOG("err:%lu", err);return check_nrf_error(err);}while(0)
+#define RETURN_IF_NRF_ERROR(err)  if(NRF_SUCCESS != err) { DEBUG_LOG("err:%lu", err); return check_nrf_error(err);}
 
 bleal_err check_nrf_error(uint32_t err);
 

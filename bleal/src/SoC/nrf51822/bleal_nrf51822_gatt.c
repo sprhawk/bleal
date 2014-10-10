@@ -24,51 +24,122 @@
 
 #include "bleal/error.h"
 #include "bleal/gatt.h"
+#include "bleal/uuid.h"
+#include "bleal/log.h"
+
+#include "bleal_nrf51822.h"
+#include "bleal_nrf51822_uuid.h"
+
+#include <string.h>
+
+typedef struct bleal_characteristic_handle_t {
+    struct bleal_characteristic_handle_t *p_next;
+    uint16_t handle; // a reference to the characteristic
+    ble_gatts_char_handles_t nrf_handles; // nRF SDK defined handles
+} bleal_characteristic_handle_t;
+
+typedef struct bleal_service_handle_t {
+    struct bleal_service_handle_t *p_next; // a list structure
+
+    uint16_t handle; // a reference to the service
+    uint16_t nrf_handle; // nRF SDK defined handle
+    bleal_characteristic_handle_t *p_characteristic_handles_list;
+} bleal_service_handle_t;
+
+static bleal_service_handle_t *p_service_handles_list = NULL;
+
+static bleal_service_handle_t *new_service_slot(void);
+static bleal_characteristic_handle_t *new_characteristic_slot(bleal_service_handle_t *const p_service);
+static bleal_service_handle_t *get_service_handle_slot(const uint16_t handle);
+static bleal_characteristic_handle_t *get_characteristic_handle_slot(const uint16_t service_handle, const uint16_t handle);
+
+static bleal_service_handle_t *new_service_slot(void)
+{
+    bleal_service_handle_t **pp = &p_service_handles_list;
+
+    while(NULL != *pp) {
+        pp = &((*pp)->p_next);
+    }
+    const size_t size = sizeof(bleal_service_handle_t);
+    *pp = (bleal_service_handle_t *)malloc(size);
+    if(*pp) {
+        memset(*pp, 0, size);
+    }
+    return *pp;
+}
+
+static bleal_service_handle_t *get_service_handle_slot(const uint16_t handle)
+{
+    bleal_service_handle_t *p = p_service_handles_list;
+
+    while(NULL != p) {
+        if(handle == p->handle) {
+            return p;
+        }
+        p = p->p_next;
+    }
+    DEBUG_LOG("gat_service_handle_slot: not found");
+    return NULL;
+}
+
+static bleal_characteristic_handle_t *new_characteristic_slot(bleal_service_handle_t *const p_service)
+{
+    bleal_characteristic_handle_t **pp = &(p_service->p_characteristic_handles_list);
+    while ( NULL != *pp ) {
+        pp = &((*pp)->p_next);
+    }
+    const size_t size = sizeof(bleal_characteristic_handle_t);
+    *pp = (bleal_characteristic_handle_t *)malloc(size);
+    if(*pp) {
+        memset(*pp, 0, size);
+    }
+    return *pp;
+}
+
+static bleal_characteristic_handle_t *get_characteristic_handle_slot(const uint16_t service_handle, const uint16_t handle)
+{
+    bleal_service_handle_t *p_service = get_service_handle_slot(service_handle);
+    if( p_service ) {
+        bleal_characteristic_handle_t *p = p_service->p_characteristic_handles_list;
+
+        while(NULL != p) {
+            if(handle == p->handle) {
+                return p;
+            }
+            p = p->p_next;
+        }
+    }
+    DEBUG_LOG("gat_characterisitc_handle_slot: not found");
+    return NULL;
+}
 
 bleal_err bleal_gatt_add_service(const bleal_gatt_service_t *p_service)
 {
     if ( p_service ) {
-        uint32_t err = NRF_SUCCESS;
         uint8_t type = BLE_GATTS_SRVC_TYPE_INVALID;
-        if ( BLEAL_GATT_PRIMARY_SERVICE == service.type ) {
+        if ( BLEAL_GATT_PRIMARY_SERVICE == p_service->type ) {
             type = BLE_GATTS_SRVC_TYPE_PRIMARY;
         }
-        else if (BLEAL_GATT_SECONDARY_SERVICE == service.type ) {
+        else if (BLEAL_GATT_SECONDARY_SERVICE == p_service->type ) {
             type = BLE_GATTS_SRVC_TYPE_SECONDARY;
         }
 
-        if (BLE_GATTS_SRV_TYPE_INVALID != type ) {
-
+        if (BLE_GATTS_SRVC_TYPE_INVALID != type ) {
             ble_uuid_t uuid;
-            uuid.type = BLE_UUID_UNKNOWN;
-            if ( BLEAL_UUID_16BIT == service.uuid.type ) {
-                uuid.type = BLE_UUID_TYPE_BLE;
-                uuid.uuid = (uint16_t)service.uuid.u.u16;
-            }
-            else if (BLEAL_UUID_128BIT == service.uuid.type && service.uuid.u.p_u128) {
-                err = sd_ble_uuid_decode(16, service.uuid.u.p_u128, &uuid);
-                if ( NRF_SUCCESS == err ) {
-                }
-                else if ( NRF_ERROR_NOT_FOUND == err ) {
-                    uint16_t type = 0;
-                    ble_uuid128_t uuid128;
-                    memcpy(uuid128.uuid128, service.uuid.u.p_u128, sizeof(uuid128.uuid128));
-                    RETURN_IF_NRF_ERROR(sd_ble_uuid_vs_add(&uuid128, &type));
-                    uuid.type = type;
-                    uuid.uuid = bytetoword(uuid128.uuid128[13], uuid128.uuid128[12]);
-                }
-                else {
-                    RETURN_NRF_ERROR(err);
-                }
-            }
+            bleal_encode_uuid(&uuid, &p_service->uuid);
 
             if ( BLE_UUID_UNKNOWN != uuid.type ) {
-                uint16_t handle = 0;
-                RETURN_NRF_ERROR(sd_ble_gatts_service_add(type, &uuid, &handle));
-                if ( service.characteristics_num && service.p_characteristics ) {
-                    for ( int i = 0; i < service.characteristics_num; i ++ ) {
-                        ble_gatt_characteristic_t *p_char = service.p_characteristics + i;
-
+                bleal_service_handle_t * p_srv_handle = NULL;
+                p_srv_handle = new_service_slot();
+                if (p_srv_handle) {
+                    // save handle as a reference between bleal and nRF SDK
+                    p_srv_handle->handle = p_service->handle;
+                    RETURN_IF_NRF_ERROR(sd_ble_gatts_service_add(type, &uuid, &p_srv_handle->nrf_handle));
+                    if ( p_service->characteristics_num && p_service->p_characteristics ) {
+                        for ( int i = 0; i < p_service->characteristics_num; i ++ ) {
+                            bleal_gatt_characteristic_t *p_char = p_service->p_characteristics + i;
+                            RETURN_IF_NRF_ERROR(bleal_gatt_add_characteristic(p_service->handle, p_char));
+                        }
                     }
                 }
             }
@@ -78,10 +149,72 @@ bleal_err bleal_gatt_add_service(const bleal_gatt_service_t *p_service)
     return BLEAL_ERR_INVALID_PARAMETER;
 }
 
-bleal_err bleal_gatt_add_characteristic(const bleal_gatt_characteristic_t *p_characteristic)
+bleal_err bleal_gatt_add_characteristic(const uint16_t service_handle, const bleal_gatt_characteristic_t *p_characteristic)
 {
-    if ( p_characteristic ) {
+    bleal_service_handle_t *p_service = get_service_handle_slot(service_handle);
+    if ( p_service && p_characteristic ) {
+        // Client Characteristic Configuration
+        ble_gatts_attr_md_t cccd_md;
 
+        // Characteristic
+        ble_gatts_char_md_t char_md;
+
+        // Attribute 
+        ble_gatts_attr_md_t attr_md;
+
+        // Attribute Value
+        ble_gatts_attr_t attr_value;
+
+        memset(&cccd_md, 0, sizeof(cccd_md));
+        memset(&char_md, 0, sizeof(char_md));
+        memset(&attr_md, 0, sizeof(attr_md));
+        memset(&attr_value, 0, sizeof(attr_value));
+
+        cccd_md.vloc = BLE_GATTS_VLOC_STACK;
+
+
+        // about Client Characteristic Configuration permission, referring to: Bluetooth Core Specification 4.1 Volume 3 Part G. 3.3.3.3
+        BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
+        if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_READ ) {
+            char_md.char_props.read = true;
+        }
+        if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_WRITE ) {
+            char_md.char_props.write = true;
+        }
+        if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_WRITE_WITHOUT_RESPONSE ) {
+            char_md.char_props.write_wo_resp= true;
+        }
+        if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_NOTIFY ) {
+            char_md.char_props.notify= true;
+            BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
+        }
+        if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_INDICATE ) {
+            char_md.char_props.indicate= true;
+            BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
+        }
+
+        if( p_characteristic->permission & BLEAL_GATT_PERMISSION_READABLE ) {
+            BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
+        }
+        if( p_characteristic->permission & BLEAL_GATT_PERMISSION_WRITABLE ) {
+            BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
+        }
+
+        attr_value.p_attr_md = &attr_md;
+
+        ble_uuid_t uuid;
+        RETURN_IF_NRF_ERROR(bleal_encode_uuid(&uuid, &p_characteristic->uuid));
+        attr_value.p_uuid = &uuid;
+        attr_value.init_len = p_characteristic->value_length;
+        attr_value.p_value = p_characteristic->p_value;
+        attr_value.max_len = p_characteristic->value_max_length;
+        attr_value.init_offs = 0;
+
+        bleal_characteristic_handle_t * p_handle = new_characteristic_slot(p_service);
+        // save handle as a reference between bleal and nRF SDK
+        p_handle->handle = p_characteristic->handle;
+        RETURN_NRF_ERROR(sd_ble_gatts_characteristic_add(BLE_GATT_HANDLE_INVALID, &char_md, &attr_value, &p_handle->nrf_handles));
+        
     }
 
     return BLEAL_ERR_INVALID_PARAMETER;

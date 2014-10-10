@@ -1,6 +1,8 @@
 #include "ble_app.h"
 
 #include "bleal/bleal.h"
+#include "bleal/gatt.h"
+
 #include "bleal/hwal.h"
 #include "bleal/log.h"
 
@@ -33,6 +35,14 @@ void ble_app_initialize(void)
     dev_params.connection.connection_supervision_timeout = BLE_CONN_SUPERVISION_TIMEOUT;
 
     bleal_setup_ble_device(&dev_params);
+
+    uint8_t value[] = "test";
+    bleal_gatt_characteristic_t characteristics[1] = {
+        { 2, {BLEAL_UUID_16BIT, {0xff12}}, BLEAL_GATT_CHAR_PROP_RD, BLEAL_GATT_PERM_RD, value, sizeof(value), 128, NULL, 0 },
+    };
+    bleal_gatt_service_t service = {1, BLEAL_GATT_PRIMARY_SERVICE, {BLEAL_UUID_16BIT, {0xff11}}, NULL, 0, characteristics, sizeof(characteristics)/sizeof(bleal_gatt_characteristic_t)};
+
+    bleal_gatt_add_service(&service);
 }
 
 void ble_app_start(void)

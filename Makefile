@@ -11,13 +11,13 @@ INCLUDEPATHS += -I"bleal/include"
 C_SOURCE_PATHS += bleal/src
 C_SOURCE_PATHS += bleal/src/SoC/nrf51822
 
-C_SOURCE_FILES += bleal.c bleal_nrf51822.c bleal_nrf51822_scheduler.c bleal_nrf51822_sys_handler.c
-C_SOURCE_FILES += bleal_advertisement.c bleal_ble_event_handler.c
+C_SOURCE_FILES += bleal.c bleal_nrf51822.c bleal_nrf51822_event_handler.c bleal_nrf51822_scheduler.c bleal_nrf51822_sys_handler.c bleal_nrf51822_uuid.c bleal_nrf51822_gatt.c
+C_SOURCE_FILES += bleal_advertisement.c 
 # C_SOURCE_FILES += bleal_byteorder.c # it will be required only when use big endian
 
 ifeq ($(MAKECMDGOALS),debug) # template for conditional rules
 C_SOURCE_FILES += bleal_log.c
-C_SOURCE_FILES += bleal_uart.c
+C_SOURCE_FILES += bleal_nrf51822_uart.c
 C_SOURCE_FILES += simple_uart.c
 endif
 
@@ -130,4 +130,4 @@ OUTPUT_FILENAME := main
 include $(TEMPLATE_PATH)/Makefile.common
 
 serial:
-	screen /dev/cu.usbmodem1411 38400 # device under Mac OSX
+	screen /dev/cu.usbmodem1451 38400 # device under Mac OSX

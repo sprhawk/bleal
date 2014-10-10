@@ -25,6 +25,9 @@
 #ifndef _BLEAL_UUID_H_
 #define _BLEAL_UUID_H_
 
+#include <stdint.h>
+#include "bleal/error.h"
+
 #include "byteorder.h"
 
 #define uuid16_lo(u) lobyte(u)
@@ -41,12 +44,12 @@ typedef union bleal_uuid128_t {
     uint8_t data[16];
 } bleal_uuid128_t;
 
-typedef struct blea_uuid_t {
+typedef struct bleal_uuid_t {
     bleal_uuid_type_t type;
     union {
         uint16_t u16; 
         uint8_t *p_u128;
     }u;
-}blea_uuid_t;
+}bleal_uuid_t;
 
 #endif // _BLEAL_UUID_H_

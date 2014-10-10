@@ -24,9 +24,41 @@
 
 #include "bleal/uuid.h"
 
+#include "bleal_nrf51822.h"
+#include <string.h>
+
 bleal_err bleal_encode_uuid(ble_uuid_t *p_out_uuid, const bleal_uuid_t *p_in_uuid)
 {
+    if ( p_out_uuid && p_in_uuid ) {
+        // prepare uuid (16-bit or 128-bit)
+        ble_uuid_t uuid;
+        uuid.type = BLE_UUID_UNKNOWN;
+        if ( BLEAL_UUID_16BIT == p_in_uuid->type ) {
+            uuid.type = BLE_UUID_TYPE_BLE;
+            uuid.uuid = (uint16_t)p_in_uuid->u.u16;
+        }
+        else if (BLEAL_UUID_128BIT == p_in_uuid->type && p_in_uuid->u.p_u128) {
+            // look for added 128-bit uuid
+            uint32_t err = sd_ble_uuid_decode(16, p_in_uuid->u.p_u128, &uuid);
+            if ( NRF_SUCCESS == err ) {
+            }
+            else if ( NRF_ERROR_NOT_FOUND == err ) {
+                // not found, added a new 128-bit uuid
+                uint8_t type = 0;
+                ble_uuid128_t uuid128;
+                memcpy(uuid128.uuid128, p_in_uuid->u.p_u128, sizeof(uuid128.uuid128));
+                RETURN_IF_NRF_ERROR(sd_ble_uuid_vs_add(&uuid128, &type));
+                uuid.type = type;
+                uuid.uuid = bytetoword(uuid128.uuid128[13], uuid128.uuid128[12]);
+            }
+            else {
+                RETURN_NRF_ERROR(err);
+            }
+        }
+        *p_out_uuid = uuid;
+        return BLEAL_ERR_SUCCESS;
+    }
+    return BLEAL_ERR_INVALID_PARAMETER;
 }
 
 
-#endif // _BLEAL_NRF51822_UUID_H_

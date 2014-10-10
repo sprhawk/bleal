@@ -26,7 +26,7 @@
 
 // BLE AL headers
 #include "bleal_nrf51822_sys_handler.h"
-#include "bleal_ble_event_handler.h"
+#include "bleal_nrf51822_event_handler.h"
 
 #include "bleal/log.h"
 

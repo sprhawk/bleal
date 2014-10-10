@@ -1,4 +1,4 @@
-/* File: bleal_ble_event_handler.h
+/* File: bleal_nrf51822_event_handler.h
  * Author: YangHongbo<hongbo@yang.me>
  * Created at: Sep 19th, 2014
  *
@@ -22,11 +22,11 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BLE_AL_BLE_EVENT_HANDLER_H_
-#define _BLE_AL_BLE_EVENT_HANDLER_H_
+#ifndef _BLE_AL_NRF51822_EVENT_HANDLER_H_
+#define _BLE_AL_NRF51822_EVENT_HANDLER_H_
 
 #include "bleal_nrf51822.h"
 
 void ble_on_event_handler(ble_evt_t * p_ble_evt);
 
-#endif // _BLE_AL_BLE_EVENT_HANDLER_H_
+#endif // _BLE_AL_NRF51822_EVENT_HANDLER_H_
