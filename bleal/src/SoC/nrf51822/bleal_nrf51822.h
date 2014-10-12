@@ -39,8 +39,10 @@
 #include "bleal/error.h"
 #include "bleal/log.h"
 
-#define RETURN_NRF_ERROR(err)  do{DEBUG_LOG("err:%lu", err);return check_nrf_error(err);}while(0)
-#define RETURN_IF_NRF_ERROR(err)  if(NRF_SUCCESS != err) { DEBUG_LOG("err:%lu", err); return check_nrf_error(err);}
+#define RETURN_NRF_ERROR(err)  do{uint32_t e = err; if(NRF_SUCCESS != e) {DEBUG_LOG("nrf err:%lu\r\n", e);} return check_nrf_error(e);}while(0)
+#define RETURN_IF_NRF_ERROR(err)  do{ uint32_t e = err; if(NRF_SUCCESS != e) { RETURN_NRF_ERROR(e);}}while(0)
+
+#define RETURN_IF_BLEAL_ERROR(err)  do{ bleal_err e = err; if(BLEAL_ERR_SUCCESS != e) { DEBUG_LOG("bleal err:%lu\r\n", e); return e;}}while(0)
 
 bleal_err check_nrf_error(uint32_t err);
 
