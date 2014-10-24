@@ -109,7 +109,7 @@ static bleal_characteristic_handle_t *get_characteristic_handle_slot(const uint1
             p = p->p_next;
         }
     }
-    DEBUG_LOG("gat_characterisitc_handle_slot: not found");
+    DEBUG_LOG("gat_characterisitc_handle_slot: not found\n");
     return NULL;
 }
 
@@ -138,9 +138,10 @@ bleal_err bleal_gatt_add_service(const bleal_gatt_service_t *p_service)
                     if ( p_service->characteristics_num && p_service->p_characteristics ) {
                         for ( int i = 0; i < p_service->characteristics_num; i ++ ) {
                             bleal_gatt_characteristic_t *p_char = p_service->p_characteristics + i;
-                            RETURN_IF_NRF_ERROR(bleal_gatt_add_characteristic(p_service->handle, p_char));
+                            RETURN_IF_BLEAL_ERROR(bleal_gatt_add_characteristic(p_service->handle, p_char));
                         }
                     }
+                    return BLEAL_ERR_SUCCESS;
                 }
             }
         }
@@ -151,70 +152,81 @@ bleal_err bleal_gatt_add_service(const bleal_gatt_service_t *p_service)
 
 bleal_err bleal_gatt_add_characteristic(const uint16_t service_handle, const bleal_gatt_characteristic_t *p_characteristic)
 {
-    bleal_service_handle_t *p_service = get_service_handle_slot(service_handle);
-    if ( p_service && p_characteristic ) {
-        // Client Characteristic Configuration
-        ble_gatts_attr_md_t cccd_md;
+    if ( p_characteristic ) {
+        bleal_service_handle_t *p_service = get_service_handle_slot(service_handle);
 
-        // Characteristic
-        ble_gatts_char_md_t char_md;
+        if( p_service ) {
+            // Client Characteristic Configuration
+            ble_gatts_attr_md_t cccd_md;
 
-        // Attribute 
-        ble_gatts_attr_md_t attr_md;
+            // Characteristic
+            ble_gatts_char_md_t char_md;
 
-        // Attribute Value
-        ble_gatts_attr_t attr_value;
+            // Attribute 
+            ble_gatts_attr_md_t attr_md;
 
-        memset(&cccd_md, 0, sizeof(cccd_md));
-        memset(&char_md, 0, sizeof(char_md));
-        memset(&attr_md, 0, sizeof(attr_md));
-        memset(&attr_value, 0, sizeof(attr_value));
+            // Attribute Value
+            ble_gatts_attr_t attr_value;
 
-        cccd_md.vloc = BLE_GATTS_VLOC_STACK;
+            memset(&cccd_md, 0, sizeof(cccd_md));
+            memset(&char_md, 0, sizeof(char_md));
+            memset(&attr_md, 0, sizeof(attr_md));
+            memset(&attr_value, 0, sizeof(attr_value));
 
+            if( p_characteristic->permission & BLEAL_GATT_PERMISSION_READABLE ) {
+                BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
+            }
+            if( p_characteristic->permission & BLEAL_GATT_PERMISSION_WRITABLE ) {
+                BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
+            }
 
-        // about Client Characteristic Configuration permission, referring to: Bluetooth Core Specification 4.1 Volume 3 Part G. 3.3.3.3
-        BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
-        if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_READ ) {
-            char_md.char_props.read = true;
+            if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_READ ) {
+                char_md.char_props.read = true;
+            }
+            if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_WRITE ) {
+                char_md.char_props.write = true;
+            }
+            if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_WRITE_WITHOUT_RESPONSE ) {
+                char_md.char_props.write_wo_resp= true;
+            }
+            if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_NOTIFY ) {
+                char_md.char_props.notify= true;
+            }
+            if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_INDICATE ) {
+                char_md.char_props.indicate= true;
+            }
+
+            // about Client Characteristic Configuration permission, referring to: Bluetooth Core Specification 4.1 Volume 3 Part G. 3.3.3.3
+            if ( p_characteristic->properties & ( BLEAL_GATT_CHARACTERISTIC_PROPERTY_INDICATE | BLEAL_GATT_CHARACTERISTIC_PROPERTY_NOTIFY )) {
+                BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.read_perm);
+                BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
+
+                cccd_md.vloc = BLE_GATTS_VLOC_STACK;
+                char_md.p_cccd_md = &cccd_md;
+            }
+
+            attr_md.vloc = BLE_GATTS_VLOC_STACK;
+            attr_md.vlen = 1;
+
+            attr_value.p_attr_md = &attr_md;
+
+            ble_uuid_t uuid;
+            RETURN_IF_BLEAL_ERROR(bleal_encode_uuid(&uuid, &p_characteristic->uuid));
+            attr_value.p_uuid = &uuid;
+
+            attr_value.p_value = p_characteristic->p_value;
+            attr_value.init_len = p_characteristic->value_length;
+            attr_value.max_len = p_characteristic->value_max_length;
+            attr_value.init_offs = 0;
+
+            // save handle as a reference between bleal and nRF SDK
+            bleal_characteristic_handle_t * p_handle = new_characteristic_slot(p_service);
+            if( p_handle ) {
+                p_handle->handle = p_characteristic->handle;
+                RETURN_NRF_ERROR(sd_ble_gatts_characteristic_add(BLE_GATT_HANDLE_INVALID, &char_md, &attr_value, &p_handle->nrf_handles));
+            }
         }
-        if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_WRITE ) {
-            char_md.char_props.write = true;
-        }
-        if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_WRITE_WITHOUT_RESPONSE ) {
-            char_md.char_props.write_wo_resp= true;
-        }
-        if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_NOTIFY ) {
-            char_md.char_props.notify= true;
-            BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
-        }
-        if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_INDICATE ) {
-            char_md.char_props.indicate= true;
-            BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccd_md.write_perm);
-        }
-
-        if( p_characteristic->permission & BLEAL_GATT_PERMISSION_READABLE ) {
-            BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
-        }
-        if( p_characteristic->permission & BLEAL_GATT_PERMISSION_WRITABLE ) {
-            BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
-        }
-
-        attr_value.p_attr_md = &attr_md;
-
-        ble_uuid_t uuid;
-        RETURN_IF_NRF_ERROR(bleal_encode_uuid(&uuid, &p_characteristic->uuid));
-        attr_value.p_uuid = &uuid;
-        attr_value.init_len = p_characteristic->value_length;
-        attr_value.p_value = p_characteristic->p_value;
-        attr_value.max_len = p_characteristic->value_max_length;
-        attr_value.init_offs = 0;
-
-        bleal_characteristic_handle_t * p_handle = new_characteristic_slot(p_service);
-        // save handle as a reference between bleal and nRF SDK
-        p_handle->handle = p_characteristic->handle;
-        RETURN_NRF_ERROR(sd_ble_gatts_characteristic_add(BLE_GATT_HANDLE_INVALID, &char_md, &attr_value, &p_handle->nrf_handles));
-        
+        return BLEAL_ERR_INVALID_PARAMETER; // no enough memory
     }
 
     return BLEAL_ERR_INVALID_PARAMETER;

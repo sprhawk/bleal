@@ -129,5 +129,3 @@ OUTPUT_FILENAME := main
 
 include $(TEMPLATE_PATH)/Makefile.common
 
-serial:
-	screen /dev/cu.usbmodem1451 38400 # device under Mac OSX

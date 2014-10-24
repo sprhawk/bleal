@@ -36,11 +36,12 @@ void ble_app_initialize(void)
 
     bleal_setup_ble_device(&dev_params);
 
-    uint8_t value[] = "test";
+    uint8_t prop = BLEAL_GATT_CHAR_PROP_RD; // |BLEAL_GATT_CHAR_PROP_NO;
+    uint8_t value[] = "testxxxxx";
     bleal_gatt_characteristic_t characteristics[1] = {
-        { 2, {BLEAL_UUID_16BIT, {0xff12}}, BLEAL_GATT_CHAR_PROP_RD, BLEAL_GATT_PERM_RD, value, sizeof(value), 128, NULL, 0 },
+        { 2, {BLEAL_UUID_16BIT, {0xff12}}, prop, BLEAL_GATT_PERM_RD, value, sizeof(value), sizeof(value), NULL, 0 },
     };
-    bleal_gatt_service_t service = {1, BLEAL_GATT_PRIMARY_SERVICE, {BLEAL_UUID_16BIT, {0xff11}}, NULL, 0, characteristics, sizeof(characteristics)/sizeof(bleal_gatt_characteristic_t)};
+    bleal_gatt_service_t service = {1, BLEAL_GATT_PRIMARY_SERVICE, {BLEAL_UUID_16BIT, {0xff21}}, NULL, 0, characteristics, sizeof(characteristics)/sizeof(characteristics[0])};
 
     bleal_gatt_add_service(&service);
 }
