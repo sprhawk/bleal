@@ -187,13 +187,13 @@ bleal_err bleal_gatt_add_characteristic(const uint16_t service_handle, const ble
                 char_md.char_props.write = true;
             }
             if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_WRITE_WITHOUT_RESPONSE ) {
-                char_md.char_props.write_wo_resp= true;
+                char_md.char_props.write_wo_resp = true;
             }
             if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_NOTIFY ) {
-                char_md.char_props.notify= true;
+                char_md.char_props.notify = true;
             }
             if( p_characteristic->properties & BLEAL_GATT_CHARACTERISTIC_PROPERTY_INDICATE ) {
-                char_md.char_props.indicate= true;
+                char_md.char_props.indicate = true;
             }
 
             // about Client Characteristic Configuration permission, referring to: Bluetooth Core Specification 4.1 Volume 3 Part G. 3.3.3.3

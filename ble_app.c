@@ -36,7 +36,7 @@ void ble_app_initialize(void)
 
     bleal_setup_ble_device(&dev_params);
 
-    uint8_t prop = BLEAL_GATT_CHAR_PROP_RD; // |BLEAL_GATT_CHAR_PROP_NO;
+    uint8_t prop = BLEAL_GATT_CHAR_PROP_RD|BLEAL_GATT_CHAR_PROP_WR|BLEAL_GATT_CHAR_PROP_NO;
     uint8_t value[] = "testxxxxx";
     bleal_gatt_characteristic_t characteristics[1] = {
         { 2, {BLEAL_UUID_16BIT, {0xff12}}, prop, BLEAL_GATT_PERM_RD, value, sizeof(value), sizeof(value), NULL, 0 },
