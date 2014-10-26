@@ -1,4 +1,4 @@
-Bluetooth Low Energy Soc Abstraction Layer
+Bluetooth Low Energy SoC Abstraction Layer
 ==========================================
 
 > I hate writing same program code on different SoCs and software architectures over and over again
