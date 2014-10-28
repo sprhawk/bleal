@@ -27,13 +27,15 @@
 
 #include "bleal_nrf51822.h"
 
+#include "simple_uart.h"
 #include "app_uart.h"
 #include "config_nrf51822.h"
 
 static inline uint32_t bleal_uart_put(uint8_t byte)
 {
+    uint32_t err = NRF_SUCCESS;
     // simple_uart_put(byte);
-    uint32_t err = app_uart_put(byte);
+    err = app_uart_put(byte);
     return err;
 }
 
@@ -58,7 +60,6 @@ void bleal_uart_init(void)
     uint32_t err = 0;
     UNUSED_VARIABLE(err);
     APP_UART_FIFO_INIT(&conn, 8, 256, bleal_uart_event_handler, APP_IRQ_PRIORITY_LOW, err);
-    err = 1;
 }
 
 int _write(int file, char *ptr, int len);
