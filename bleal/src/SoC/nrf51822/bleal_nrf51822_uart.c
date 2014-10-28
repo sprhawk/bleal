@@ -21,13 +21,46 @@
 
 #include "bleal/hwal.h"
 
-#include "simple_uart.h"
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+
+#include "bleal_nrf51822.h"
+
+#include "app_uart.h"
 #include "config_nrf51822.h"
+
+static inline uint32_t bleal_uart_put(uint8_t byte)
+{
+    // simple_uart_put(byte);
+    uint32_t err = app_uart_put(byte);
+    return err;
+}
+
+static void bleal_uart_event_handler(app_uart_evt_t *p_evt);
+void bleal_uart_event_handler(app_uart_evt_t *p_evt)
+{
+}
 
 void bleal_uart_init(void)
 {
-    simple_uart_config(RTS_PIN_NUMBER, TX_PIN_NUMBER, CTS_PIN_NUMBER, RX_PIN_NUMBER, HWFC);
+    // simple_uart_config(RTS_PIN_NUMBER, TX_PIN_NUMBER, CTS_PIN_NUMBER, RX_PIN_NUMBER, HWFC);
+    app_uart_comm_params_t conn;
+    memset(&conn, 0, sizeof(conn));
+    conn.rx_pin_no = RX_PIN_NUMBER;
+    conn.tx_pin_no = TX_PIN_NUMBER;
+    conn.rts_pin_no = RTS_PIN_NUMBER;
+    conn.cts_pin_no = CTS_PIN_NUMBER;
+    conn.flow_control = (HWFC)?APP_UART_FLOW_CONTROL_ENABLED:APP_UART_FLOW_CONTROL_DISABLED;
+    conn.use_parity = false;
+    conn.baud_rate = UART_BAUDRATE_BAUDRATE_Baud38400;
+
+    uint32_t err = 0;
+    UNUSED_VARIABLE(err);
+    APP_UART_FIFO_INIT(&conn, 8, 256, bleal_uart_event_handler, APP_IRQ_PRIORITY_LOW, err);
+    err = 1;
 }
+
 int _write(int file, char *ptr, int len);
 
 int _write(int file, char *ptr, int len)
@@ -36,11 +69,11 @@ int _write(int file, char *ptr, int len)
     for(int i = 0; i < len; i ++) {
         uint8_t c = (uint8_t)*(ptr + i);
         if ('\n' == c && '\r' != last_c) { // automatically output \r\n for single \n
-            simple_uart_put('\r');
-            simple_uart_put('\n');
+            bleal_uart_put('\r');
+            bleal_uart_put('\n');
         }
         else {
-            simple_uart_put(c);
+            bleal_uart_put(c);
         }
         last_c = c;
     }
