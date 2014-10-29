@@ -18,10 +18,10 @@ C_SOURCE_FILES += bleal_advertisement.c
 ifeq ($(MAKECMDGOALS),debug) # template for conditional rules
     C_SOURCE_FILES += bleal_log.c
     C_SOURCE_FILES += bleal_nrf51822_uart.c
-    # C_SOURCE_FILES += simple_uart.c
-    C_SOURCE_FILES += app_uart_fifo.c
-    C_SOURCE_FILES += app_fifo.c
-    C_SOURCE_FILES += app_gpiote.c
+    C_SOURCE_FILES += simple_uart.c
+# C_SOURCE_FILES += app_uart_fifo.c
+#    C_SOURCE_FILES += app_fifo.c
+#    C_SOURCE_FILES += app_gpiote.c
 endif
 
 TARGET_CHIP := NRF51822_QFAA_CA

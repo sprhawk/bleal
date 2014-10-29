@@ -143,6 +143,9 @@ bleal_err bleal_gatt_add_service(const bleal_gatt_service_t *p_service)
                     }
                     return BLEAL_ERR_SUCCESS;
                 }
+                else {
+                    DEBUG_LOG("No enough memory\n");
+                }
             }
         }
     }

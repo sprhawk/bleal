@@ -15,7 +15,7 @@ void ble_app_stop_adv(void);
 
 void ble_app_initialize(void)
 {
-    bleal_initialize(false);
+    bleal_initialize(true);
 
     bleal_device_parameters_t dev_params;
     memset(&dev_params, 0, sizeof(dev_params));
@@ -45,7 +45,7 @@ void ble_app_initialize(void)
                 {0xff12}
             }, 
             BLEAL_GATT_CHAR_PROP_RD|BLEAL_GATT_CHAR_PROP_WR|BLEAL_GATT_CHAR_PROP_NO, // properties
-            BLEAL_GATT_PERM_RD, // permission
+            BLEAL_GATT_PERM_RD|BLEAL_GATT_PERM_WR, // permission
             value,  // value pointer
             sizeof(value),  // initial value length
             sizeof(value),  // max value length
@@ -67,7 +67,7 @@ void ble_app_initialize(void)
         sizeof(characteristics)/sizeof(characteristics[0]) // number of characteristics
     };
 
-    bleal_gatt_add_service(&service);
+    CHECK_ERR(bleal_gatt_add_service(&service));
 }
 
 void ble_app_start(void)

@@ -31,11 +31,16 @@
 #include "app_uart.h"
 #include "config_nrf51822.h"
 
+#define USE_UART_FIFO 0
+
 static inline uint32_t bleal_uart_put(uint8_t byte)
 {
     uint32_t err = NRF_SUCCESS;
-    // simple_uart_put(byte);
+#if USE_UART_FIFO
     err = app_uart_put(byte);
+#else
+    simple_uart_put(byte);
+#endif
     return err;
 }
 
@@ -46,7 +51,7 @@ void bleal_uart_event_handler(app_uart_evt_t *p_evt)
 
 void bleal_uart_init(void)
 {
-    // simple_uart_config(RTS_PIN_NUMBER, TX_PIN_NUMBER, CTS_PIN_NUMBER, RX_PIN_NUMBER, HWFC);
+#if USE_UART_FIFO
     app_uart_comm_params_t conn;
     memset(&conn, 0, sizeof(conn));
     conn.rx_pin_no = RX_PIN_NUMBER;
@@ -59,7 +64,10 @@ void bleal_uart_init(void)
 
     uint32_t err = 0;
     UNUSED_VARIABLE(err);
-    APP_UART_FIFO_INIT(&conn, 8, 256, bleal_uart_event_handler, APP_IRQ_PRIORITY_LOW, err);
+    APP_UART_FIFO_INIT(&conn, 2, 32, bleal_uart_event_handler, APP_IRQ_PRIORITY_LOW, err);
+#else
+    simple_uart_config(RTS_PIN_NUMBER, TX_PIN_NUMBER, CTS_PIN_NUMBER, RX_PIN_NUMBER, HWFC);
+#endif
 }
 
 int _write(int file, char *ptr, int len);
