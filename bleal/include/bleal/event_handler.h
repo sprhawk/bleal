@@ -1,4 +1,6 @@
-/* file: bleal.h
+/* File: event_handler.h
+ * Author: YangHongbo<hongbo@yang.me>
+ * Created at:
  *
  * Copyright (c) 2014, Yang Hongbo (hongbo@yang.me) 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,23 +22,26 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BLE_AL_H_
-#define _BLE_AL_H_
+#ifndef _BLEAL_EVENT_HANDLER_H_
+#define _BLEAL_EVENT_HANDLER_H_
 
-#include <stdint.h>
-#include <stdbool.h>
+#include "bleal_nrf51822.h"
 
-#include "bleal/uuid.h"
-#include "bleal/error.h"
-#include "bleal/hci_error.h"
-#include "bleal/appearance.h"
+typedef enum bleal_event_type
+{
+    BLEAL_EVENT_UNKNOWN,
+    BLEAL_EVENT_CONNECTED,
+    BLEAL_EVENT_DISCONNECTED,
+} bleal_event_type;
 
-#include "bleal/connection.h"
-#include "bleal/advertisement.h"
+typedef struct bleal_event_t
+{
+    bleal_event_type type;
+    bleal_peer_t * p_peer;
+} bleal_event_t;
 
+typedef void (BLEAL_EVENT_CALLBACK_FUNC)(bleal_event_t *p_event);
+typedef void (BLEAL_SUBSCRIBE_TO_CHARACTERISTIC_CALLBACK_FUNC)(uint16_t service_handle, uint16_t characteristic_handle, bool is_notifying);
+typedef void (BLEAL_CHARACTERISTIC_WRITE_REQUEST_CALLBACK_FUNC)(uint16_t service_handle, uint16_t characteristic_handle);
 
-bleal_err bleal_initialize(bool service_changed);
-
-void bleal_loop();
-
-#endif // _BLE_AL_H_ 
+#endif

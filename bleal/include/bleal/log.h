@@ -28,12 +28,14 @@
 void bleal_log(char *s, ...);
 #define DEBUG_LOG(s, ...) bleal_log("%s:%d " s, __FILE__, __LINE__,  ##__VA_ARGS__)
 #define CHECK_ERR(f) do { bleal_err err = (f); if (BLEAL_ERR_SUCCESS != err) {DEBUG_LOG("func: "#f" returned: %d", (int)err);}}while(0);
+#define CHECK_POINTER(p) do { if ( NULL == p ) { DEBUG_LOG("Null pointer: " #p "\n"); } } while(0);
 
 #else
 
 #define bleal_log(x, ...) ((void)0)
 #define DEBUG_LOG(s, ...) ((void)0)
 #define CHECK_ERR(f) (f);
+#define CHECK_POINTER(p) ((void)0);
 
 #endif
 

@@ -25,7 +25,7 @@
 #ifndef _BLE_AL_ADVERTISEMENT_H_
 #define _BLE_AL_ADVERTISEMENT_H_
 
-#include "bleal/uuid.h"
+#include "bleal/bleal.h"
 
 // refer: https://www.bluetooth.org/en-us/specification/assigned-numbers/generic-access-profile
 typedef enum bleal_advertisement_data_type_t {
@@ -106,4 +106,7 @@ typedef struct bleal_advertisement_parameters_t {
 
 bleal_err bleal_fill_advertisement_buffer(const bleal_advertisement_data_t *p_data, const uint8_t number, uint8_t * p_buffer, const uint8_t max_len, uint8_t *p_len);
 
+bleal_err bleal_start_adv(const bleal_ad_params_t *params, const uint8_t *p_adv, const uint8_t adv_len, const uint8_t * p_resp, const uint8_t resp_len);
+bleal_err bleal_start_advertising(const bleal_ad_params_t *params, const bleal_ad_data_t *p_ad_data, const uint8_t ad_num, const bleal_ad_data_t * p_resp_data, const uint8_t resp_num);
+bleal_err bleal_stop_advertising(void);
 #endif // _BLE_AL_ADVERTISEMENT_H_

@@ -18,6 +18,7 @@ C_SOURCE_FILES += bleal_advertisement.c
 ifeq ($(MAKECMDGOALS),debug) # template for conditional rules
     C_SOURCE_FILES += bleal_log.c
     C_SOURCE_FILES += bleal_nrf51822_uart.c
+    C_SOURCE_FILES += bleal_nrf51822_event_handler_log.c
     C_SOURCE_FILES += simple_uart.c
 # C_SOURCE_FILES += app_uart_fifo.c
 #    C_SOURCE_FILES += app_fifo.c

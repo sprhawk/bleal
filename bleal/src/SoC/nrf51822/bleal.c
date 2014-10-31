@@ -202,8 +202,8 @@ bleal_err bleal_stop_advertising(void)
 
 bleal_err bleal_disconnect(const bleal_peer_t *p_peer, const hci_error_code_t error_code)
 {
-    if (p_peer && p_peer->handle) {
-        RETURN_NRF_ERROR(sd_ble_gap_disconnect(*((uint16_t *)p_peer->handle), (uint8_t)error_code));
+    if (p_peer && p_peer->p_handle) {
+        RETURN_NRF_ERROR(sd_ble_gap_disconnect(*((uint16_t *)p_peer->p_handle), (uint8_t)error_code));
     }
     DEBUG_LOG("peer and peer->handle cannot be NULL\n");
     return BLEAL_ERR_INVALID_PARAMETER;
