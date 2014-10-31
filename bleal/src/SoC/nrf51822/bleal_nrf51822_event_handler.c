@@ -25,81 +25,9 @@
 #include "bleal_nrf51822_event_handler.h"
 
 #include "bleal_nrf51822.h"
+#include "bleal_nrf51822_peer.h"
+
 #include <string.h>
-
-typedef struct bleal_peer_list_t {
-    bleal_peer_t peer;
-    struct bleal_peer_list_t *p_next;
-}bleal_peer_list_t;
-
-static bleal_peer_list_t *p_head = NULL;
-
-bleal_err new_peer(const uint16_t handle, bleal_peer_t *p_peer);
-bleal_err remove_peer_handle(const uint16_t handle);
-bleal_err find_peer(const uint16_t conn_handle, bleal_peer_t *p_peer);
-
-bleal_err new_peer(const uint16_t handle, bleal_peer_t *p_peer)
-{
-    bleal_peer_list_t ** pp = &p_head;
-    while(*pp) {
-        pp = &p_head->p_next;
-    }
-    const size_t size = sizeof(bleal_peer_list_t);
-    *pp = (bleal_peer_list_t *)malloc(size);
-    if (*pp) {
-        memset(*pp, 0, size);
-        (*pp)->peer.p_handle = (void *)(uint32_t)handle;
-        if ( p_peer ) {
-            *p_peer = (*pp)->peer;
-        }
-        return BLEAL_ERR_SUCCESS;
-    }
-    return BLEAL_ERR_NOT_ENOUGH_MEMORY;
-}
-
-bleal_err remove_peer_handle(const uint16_t handle)
-{
-    bleal_peer_list_t ** prev_pp = NULL;
-    bleal_peer_list_t ** pp = &p_head;
-    uint16_t count = 0;
-    while( *pp ) {
-        const uint16_t h = (uint16_t)(uint32_t)(*pp)->peer.p_handle;
-        if ( h == handle ) {
-            bleal_peer_list_t *p = *pp;
-            pp = &p->p_next;
-            (*prev_pp)->p_next = p->p_next;
-            free(p); p = NULL;
-
-            count ++;
-        }
-        else {
-            prev_pp = pp;
-            pp = &p_head->p_next;
-        }
-    }
-
-    if ( 0 == count ) {
-        DEBUG_LOG("not found any peer handle\n");
-        return BLEAL_ERR_NOT_FOUND;
-    }
-    return BLEAL_ERR_SUCCESS;
-}
-
-bleal_err find_peer(const uint16_t conn_handle, bleal_peer_t *p_peer)
-{
-    bleal_peer_list_t **pp = &p_head;
-    while(*pp ) {
-        const uint16_t handle = (uint16_t)(uint32_t)(*pp)->peer.p_handle;
-        if (handle == conn_handle ) {
-            if ( p_peer ) {
-                *p_peer = (*pp)->peer;
-            }
-            return BLEAL_ERR_SUCCESS;
-        }
-        pp = &p_head->p_next;
-    }
-    return BLEAL_ERR_NOT_FOUND;
-}
 
 void ble_on_event_handler(ble_evt_t * p_ble_evt)
 {

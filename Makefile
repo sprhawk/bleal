@@ -11,7 +11,7 @@ INCLUDEPATHS += -I"bleal/include"
 C_SOURCE_PATHS += bleal/src
 C_SOURCE_PATHS += bleal/src/SoC/nrf51822
 
-C_SOURCE_FILES += bleal.c bleal_nrf51822.c bleal_nrf51822_event_handler.c bleal_nrf51822_scheduler.c bleal_nrf51822_sys_handler.c bleal_nrf51822_uuid.c bleal_nrf51822_gatt.c
+C_SOURCE_FILES += bleal.c bleal_nrf51822.c bleal_nrf51822_event_handler.c bleal_nrf51822_scheduler.c bleal_nrf51822_sys_handler.c bleal_nrf51822_uuid.c bleal_nrf51822_gatt.c bleal_nrf51822_peer.c
 C_SOURCE_FILES += bleal_advertisement.c 
 # C_SOURCE_FILES += bleal_byteorder.c # it will be required only when use big endian
 
