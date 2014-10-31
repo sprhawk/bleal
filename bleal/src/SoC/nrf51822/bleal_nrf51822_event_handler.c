@@ -25,18 +25,91 @@
 #include "bleal_nrf51822_event_handler.h"
 
 #include "bleal_nrf51822.h"
+#include <string.h>
 
-uint8_t conn_handle = 0;
+typedef struct bleal_peer_list_t {
+    bleal_peer_t peer;
+    struct bleal_peer_list_t *p_next;
+}bleal_peer_list_t;
 
-#ifdef DEBUG
-static void log_event(ble_evt_t *p_ble_evt);
-#endif
+static bleal_peer_list_t *p_head = NULL;
+
+bleal_err new_peer(const uint16_t handle, bleal_peer_t *p_peer);
+bleal_err remove_peer_handle(const uint16_t handle);
+bleal_err find_peer(const uint16_t conn_handle, bleal_peer_t *p_peer);
+
+bleal_err new_peer(const uint16_t handle, bleal_peer_t *p_peer)
+{
+    bleal_peer_list_t ** pp = &p_head;
+    while(*pp) {
+        pp = &p_head->p_next;
+    }
+    const size_t size = sizeof(bleal_peer_list_t);
+    *pp = (bleal_peer_list_t *)malloc(size);
+    if (*pp) {
+        memset(*pp, 0, size);
+        (*pp)->peer.p_handle = (void *)(uint32_t)handle;
+        if ( p_peer ) {
+            *p_peer = (*pp)->peer;
+        }
+        return BLEAL_ERR_SUCCESS;
+    }
+    return BLEAL_ERR_NOT_ENOUGH_MEMORY;
+}
+
+bleal_err remove_peer_handle(const uint16_t handle)
+{
+    bleal_peer_list_t ** prev_pp = NULL;
+    bleal_peer_list_t ** pp = &p_head;
+    uint16_t count = 0;
+    while( *pp ) {
+        const uint16_t h = (uint16_t)(uint32_t)(*pp)->peer.p_handle;
+        if ( h == handle ) {
+            bleal_peer_list_t *p = *pp;
+            pp = &p->p_next;
+            (*prev_pp)->p_next = p->p_next;
+            free(p); p = NULL;
+
+            count ++;
+        }
+        else {
+            prev_pp = pp;
+            pp = &p_head->p_next;
+        }
+    }
+
+    if ( 0 == count ) {
+        DEBUG_LOG("not found any peer handle\n");
+        return BLEAL_ERR_NOT_FOUND;
+    }
+    return BLEAL_ERR_SUCCESS;
+}
+
+bleal_err find_peer(const uint16_t conn_handle, bleal_peer_t *p_peer)
+{
+    bleal_peer_list_t **pp = &p_head;
+    while(*pp ) {
+        const uint16_t handle = (uint16_t)(uint32_t)(*pp)->peer.p_handle;
+        if (handle == conn_handle ) {
+            if ( p_peer ) {
+                *p_peer = (*pp)->peer;
+            }
+            return BLEAL_ERR_SUCCESS;
+        }
+        pp = &p_head->p_next;
+    }
+    return BLEAL_ERR_NOT_FOUND;
+}
 
 void ble_on_event_handler(ble_evt_t * p_ble_evt)
 {
 #ifdef DEBUG
     log_event(p_ble_evt);
 #endif
+    // bleal_err err = BLEAL_ERR_NOT_IMPLEMENTED;
+    uint16_t conn_handle = 0;
+    bleal_peer_t peer = {NULL};
+
     switch(p_ble_evt->header.evt_id) {
         // common events
         case BLE_EVT_TX_COMPLETE:
@@ -49,8 +122,12 @@ void ble_on_event_handler(ble_evt_t * p_ble_evt)
         // gap events
         case BLE_GAP_EVT_CONNECTED:
             conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
+            CHECK_ERR(new_peer(conn_handle, &peer));
+
             break;
         case BLE_GAP_EVT_DISCONNECTED:
+            conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
+            CHECK_ERR(remove_peer_handle(conn_handle));
             break;
         case BLE_GAP_EVT_CONN_PARAM_UPDATE:
             break;
@@ -122,125 +199,3 @@ void ble_on_event_handler(ble_evt_t * p_ble_evt)
 }
 
 
-
-#ifdef DEBUG
-
-void log_event(ble_evt_t *p_ble_evt)
-{
-    switch(p_ble_evt->header.evt_id) {
-        // common events
-        case BLE_EVT_TX_COMPLETE:
-            bleal_log("ble evt: tx_complete(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_EVT_USER_MEM_REQUEST:
-            bleal_log("ble evt: user_mem_request(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_EVT_USER_MEM_RELEASE:
-            bleal_log("ble evt:user_mem_release(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        
-        // gap events
-        case BLE_GAP_EVT_CONNECTED:
-            bleal_log("ble evt: gap_evt_connected(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GAP_EVT_DISCONNECTED:
-            bleal_log("ble evt: gap_evt_disconnected(%d) reason:%u\r\n", p_ble_evt->header.evt_id, p_ble_evt->evt.gap_evt.params.disconnected.reason);
-            break;
-        case BLE_GAP_EVT_CONN_PARAM_UPDATE:
-            bleal_log("ble evt: evt_conn_param_update(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GAP_EVT_SEC_PARAMS_REQUEST:
-            bleal_log("ble evt: evt_sec_params_request(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GAP_EVT_SEC_INFO_REQUEST:
-            bleal_log("ble evt: evt_sec_info_request(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GAP_EVT_PASSKEY_DISPLAY:
-            bleal_log("ble evt: evt_passkey_display(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GAP_EVT_AUTH_KEY_REQUEST:
-            bleal_log("ble evt: evt_auth_key_request(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GAP_EVT_AUTH_STATUS:
-            bleal_log("ble evt: evt_auth_status(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GAP_EVT_CONN_SEC_UPDATE:
-            bleal_log("ble evt: evt_conn_sec_udpate(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GAP_EVT_TIMEOUT:
-            bleal_log("ble evt: gap_evt_timeout(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GAP_EVT_RSSI_CHANGED:
-            bleal_log("ble evt: gap_evt_rssi_changed(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-
-        // l2cap events
-        case BLE_L2CAP_EVT_RX:
-            bleal_log("ble evt: l2cap_evt_rx(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-
-        // gattc events
-        case BLE_GATTC_EVT_PRIM_SRVC_DISC_RSP:
-            bleal_log("ble evt: gattc_evt_prim_srvc_disc_resp(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GATTC_EVT_REL_DISC_RSP:
-            bleal_log("ble evt: gattc_evt_rel_disc_rsp(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GATTC_EVT_CHAR_DISC_RSP:
-            bleal_log("ble evt: gattc_evt_char_disc_rsp(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GATTC_EVT_DESC_DISC_RSP:
-            bleal_log("ble evt: gattc_evt_desc_disc_rsp(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GATTC_EVT_CHAR_VAL_BY_UUID_READ_RSP:
-            bleal_log("ble evt: gattc_evt_char_val_by_uuid_read_rsp(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GATTC_EVT_READ_RSP:
-            bleal_log("ble evt: gattc_evt_read_rsp(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GATTC_EVT_CHAR_VALS_READ_RSP:
-            bleal_log("ble evt: gattc_evt_char_vals_read_rsp(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GATTC_EVT_WRITE_RSP:
-            bleal_log("ble evt: gattc_evt_write_rsp(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GATTC_EVT_HVX:
-            bleal_log("ble evt: gattc_evt_hvx(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-        case BLE_GATTC_EVT_TIMEOUT:
-            bleal_log("ble evt: gattc_evt_timeout(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-    
-        // gatts events
-        case BLE_GATTS_EVT_WRITE:
-            bleal_log("ble evt: gatts_evt_write(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-    
-        case BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST:
-            bleal_log("ble evt: gatts_evt_rw_authorize_request(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-    
-        case BLE_GATTS_EVT_SYS_ATTR_MISSING:
-            bleal_log("ble evt: gatts_evt_sys_attr_missing(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-    
-        case BLE_GATTS_EVT_HVC:
-            bleal_log("ble evt: gatts_evt_hvc(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-    
-        case BLE_GATTS_EVT_SC_CONFIRM:
-            bleal_log("ble evt: gatts_evt_sc_confirm(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-    
-        case BLE_GATTS_EVT_TIMEOUT:
-            bleal_log("ble evt: gatts_evt_timeout(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-    
-            // ble_app_gatts_on_event(p_ble_evt);
-        default:
-            bleal_log("ble evt: unknown(%d)\r\n", p_ble_evt->header.evt_id);
-            break;
-    }
-}
-
-#endif

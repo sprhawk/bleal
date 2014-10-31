@@ -46,7 +46,7 @@ bleal_err bleal_fill_advertisement_buffer(const bleal_advertisement_data_t *p_da
                             offset += _l;
                         }
                         else {
-                            return BLEAL_ERR_NOT_ENOUGH_BUFFER;
+                            return BLEAL_ERR_NOT_ENOUGH_MEMORY;
                         }
                     }
                     break;
@@ -67,7 +67,7 @@ bleal_err bleal_fill_advertisement_buffer(const bleal_advertisement_data_t *p_da
                             offset += _l;
                         }
                         else {
-                            return BLEAL_ERR_NOT_ENOUGH_BUFFER;
+                            return BLEAL_ERR_NOT_ENOUGH_MEMORY;
                         }
                     }
                     break;
@@ -90,7 +90,7 @@ bleal_err bleal_fill_advertisement_buffer(const bleal_advertisement_data_t *p_da
                                 offset += _l;
                             }
                             else {
-                                return BLEAL_ERR_NOT_ENOUGH_BUFFER;
+                                return BLEAL_ERR_NOT_ENOUGH_MEMORY;
                             }
                         }
                         else {
@@ -115,7 +115,7 @@ bleal_err bleal_fill_advertisement_buffer(const bleal_advertisement_data_t *p_da
                                 offset += 2 + len;
                             }
                             else {
-                                return BLEAL_ERR_NOT_ENOUGH_BUFFER;
+                                return BLEAL_ERR_NOT_ENOUGH_MEMORY;
                             }
                         }
                     }
@@ -142,7 +142,7 @@ bleal_err bleal_fill_advertisement_buffer(const bleal_advertisement_data_t *p_da
                             offset += _l;
                         }
                         else {
-                            return BLEAL_ERR_NOT_ENOUGH_BUFFER;
+                            return BLEAL_ERR_NOT_ENOUGH_MEMORY;
                         }
                     }
                     break;

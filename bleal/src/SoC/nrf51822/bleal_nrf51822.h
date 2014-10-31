@@ -50,4 +50,8 @@ void _nrf51822_setup(bool change_service);
 
 void _power_manage(void);
 
+#ifdef DEBUG
+void log_event(ble_evt_t *p_ble_evt);
+#endif
+
 #endif // _BLE_AL_NRF51822_H_

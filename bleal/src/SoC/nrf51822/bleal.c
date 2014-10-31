@@ -21,10 +21,6 @@
 
 #include "bleal/bleal.h"
 
-#include "bleal/log.h"
-#include "bleal/byteorder.h"
-#include "bleal/advertisement.h"
-
 #include "bleal_nrf51822.h"
 
 #include <stdlib.h>
