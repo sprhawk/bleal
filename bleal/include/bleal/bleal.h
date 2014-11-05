@@ -33,6 +33,7 @@
 
 #include "bleal/connection.h"
 #include "bleal/advertisement.h"
+#include "bleal/event_handler.h"
 
 
 bleal_err bleal_initialize(bool service_changed);

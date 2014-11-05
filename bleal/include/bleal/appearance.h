@@ -22,6 +22,9 @@
  * THE SOFTWARE.
  */
 
+#ifndef _BLEAL_APPEARANCE_H_
+#define _BLEAL_APPEARANCE_H_
+
 // refer: https://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.gap.appearance.xml
 typedef enum bleal_appearance_t{
     BLEAL_APPEARANCE_UNKNOWN = 0,
@@ -74,3 +77,5 @@ typedef enum bleal_appearance_t{
     BLEAL_APPEARANCE_LOCATION_POD = 5187,
     BLEAL_APPEARANCE_LOCATION_NAVIGATION_POD = 5188,
 } bleal_appearance_t;
+
+#endif // _BLEAL_APPEARANCE_H_

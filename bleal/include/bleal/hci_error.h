@@ -22,6 +22,9 @@
  * THE SOFTWARE.
  */
 
+#ifndef _BLEAL_HCI_ERROR_H_
+#define _BLEAL_HCI_ERROR_H_
+
 // Bluetooth Core Specification 4.0 Volume 2 Part D 1.3
 typedef enum hci_error_code_t{
     HCI_SUCCESS = 0x00,
@@ -89,3 +92,5 @@ typedef enum hci_error_code_t{
     HCI_CONNECTION_FAILED_TO_BE_ESTABLISHED = 0x3e,
     HCI_MAC_CONNECTION_FAILED = 0x3f,
 } hci_error_code_t;
+
+#endif // _BLEAL_HCI_ERROR_H_ 

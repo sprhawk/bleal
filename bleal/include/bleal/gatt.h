@@ -25,7 +25,12 @@
 #ifndef _BLE_AL_GATT_H_
 #define _BLE_AL_GATT_H_
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "bleal/uuid.h"
+#include "bleal/connection.h"
+#include "bleal/event_handler.h"
 
 // refer: Bluetooth Core Specification 4.1 Volume 3 Part F. 3.2.5
 #define BLEAL_GATT_PERMISSION_READABLE          (1 << 0)
@@ -167,6 +172,8 @@ typedef struct bleal_gatt_characteristic_definition_t
 
     bleal_gatt_characteristic_descriptor_t *p_descriptors;
     uint16_t descriptors_num;
+
+    bleal_event_callbacks_t callbacks;
 } bleal_gatt_characteristic_definition_t, bleal_gatt_characteristic_t;
 
 // refer: Bluetooth Core Specification 4.1 Volume 3 Part G. 3.1

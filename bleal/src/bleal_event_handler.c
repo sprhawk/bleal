@@ -1,4 +1,4 @@
-/* File: event_handler.h
+/* File: bleal_event_handler.c
  * Author: YangHongbo<hongbo@yang.me>
  * Created at:
  *
@@ -22,32 +22,6 @@
  * THE SOFTWARE.
  */
 
-#ifndef _BLEAL_EVENT_HANDLER_H_
-#define _BLEAL_EVENT_HANDLER_H_
+#include "bleal/bleal.h"
 
-#include "bleal/error.h"
-#include "bleal/connection.h"
 
-typedef enum bleal_event_type_t
-{
-    BLEAL_EVENT_UNKNOWN,
-    BLEAL_EVENT_CONNECTED,
-    BLEAL_EVENT_DISCONNECTED,
-} bleal_event_type_t;
-
-typedef void (*bleal_event_callback_func)(const bleal_event_type_t type, const bleal_peer_t *peer);
-typedef void (*bleal_event_notification_callback_func)(const bool is_notifying);
-typedef void (*bleal_event_write_request_callback_func)();
-
-typedef void (*bleal_event_read_request_callback_func)();
-
-typedef struct bleal_event_callbacks_t
-{
-    bleal_event_notification_callback_func notification_callback;
-    bleal_event_write_request_callback_func write_callback;
-    bleal_event_read_request_callback_func read_callback;
-}bleal_event_callbacks_t;
-
-bleal_err register_bleal_event_callback(bleal_event_callback_func event_callback);
-
-#endif

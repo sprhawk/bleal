@@ -110,6 +110,7 @@ void ble_on_event_handler(ble_evt_t * p_ble_evt)
             break;
     
         case BLE_GATTS_EVT_SYS_ATTR_MISSING:
+            conn_handle = p_ble_evt->evt.gatts_evt.conn_handle;
             sd_ble_gatts_sys_attr_set(conn_handle, NULL, 0);
             break;
     

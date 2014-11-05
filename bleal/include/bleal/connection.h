@@ -25,7 +25,9 @@
 #ifndef _BLEAL_CONNECTION_H_
 #define _BLEAL_CONNECTION_H_
 
-#include "bleal/bleal.h"
+#include "bleal/error.h"
+#include "bleal/hci_error.h"
+#include "bleal/appearance.h"
 
 typedef struct bleal_peer_t {
     void *p_handle; // handle may be any value, eg, handle to a unit16_t value for nrf51822
