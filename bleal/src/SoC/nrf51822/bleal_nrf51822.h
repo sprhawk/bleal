@@ -44,6 +44,7 @@
 
 #define RETURN_IF_BLEAL_ERROR(err)  do{ bleal_err e = err; if(BLEAL_ERR_SUCCESS != e) { DEBUG_LOG("bleal err:%lu\r\n", e); return e;}}while(0)
 
+
 bleal_err check_nrf_error(uint32_t err);
 
 void _nrf51822_setup(bool change_service);

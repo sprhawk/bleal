@@ -54,7 +54,7 @@ void _nrf51822_setup(bool service_changed)
     APP_ERROR_CHECK(sd_ble_enable(&bep));
 
     sys_evt_handler_init();
-    APP_ERROR_CHECK(softdevice_ble_evt_handler_set(ble_on_event_handler));
+    APP_ERROR_CHECK(softdevice_ble_evt_handler_set(bleal_on_event_handler));
 }
 
 void _power_manage(void)

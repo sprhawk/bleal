@@ -27,6 +27,6 @@
 
 #include "bleal_nrf51822.h"
 
-void ble_on_event_handler(ble_evt_t * p_ble_evt);
+void bleal_on_event_handler(ble_evt_t * p_ble_evt);
 
 #endif // _BLE_AL_NRF51822_EVENT_HANDLER_H_

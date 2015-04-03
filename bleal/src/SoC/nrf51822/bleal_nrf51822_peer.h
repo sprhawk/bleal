@@ -27,8 +27,26 @@
 
 #include "bleal_nrf51822.h"
 
-bleal_err new_peer(const uint16_t handle, bleal_peer_t *p_peer);
-bleal_err remove_peer_handle(const uint16_t handle);
-bleal_err find_peer(const uint16_t conn_handle, bleal_peer_t *p_peer);
+static inline uint16_t bleal_nrf_get_handle_from_peer(const bleal_peer_t *p_peer)
+{
+    if ( p_peer ) {
+        uint32_t h = (uint32_t)(p_peer->p_handle);
+        return (uint16_t)h;
+    }
+    return (uint16_t)-1;
+}
+
+static inline void bleal_nrf_set_handle_to_peer(uint16_t handle, bleal_peer_t *p_peer)
+{
+    if ( p_peer ) {
+        uint32_t h = (uint32_t)handle;
+        p_peer->p_handle = (void *)h;
+    }
+}
+
+bleal_err bleal_new_peer(const uint16_t handle, bleal_peer_t *p_peer);
+bleal_err bleal_remove_peer_handle(const uint16_t handle);
+bleal_err bleal_find_peer(const uint16_t conn_handle, bleal_peer_t *p_peer);
+bleal_peer_t * bleal_get_first_peer(void);
 
 #endif // _BLEAL_NRF51822_PEER_H_

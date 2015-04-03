@@ -33,7 +33,7 @@ typedef struct bleal_peer_list_t {
 
 static bleal_peer_list_t * p_head = NULL;
 
-bleal_err new_peer(const uint16_t handle, bleal_peer_t *p_peer)
+bleal_err bleal_new_peer(const uint16_t handle, bleal_peer_t *p_peer)
 {
     bleal_peer_list_t ** pp = &p_head;
     while(*pp) {
@@ -43,7 +43,7 @@ bleal_err new_peer(const uint16_t handle, bleal_peer_t *p_peer)
     *pp = (bleal_peer_list_t *)malloc(size);
     if (*pp) {
         memset(*pp, 0, size);
-        (*pp)->peer.p_handle = (void *)(uint32_t)handle;
+        bleal_nrf_set_handle_to_peer(handle, &((*pp)->peer));
         if ( p_peer ) {
             *p_peer = (*pp)->peer;
         }
@@ -52,13 +52,13 @@ bleal_err new_peer(const uint16_t handle, bleal_peer_t *p_peer)
     return BLEAL_ERR_NOT_ENOUGH_MEMORY;
 }
 
-bleal_err remove_peer_handle(const uint16_t handle)
+bleal_err bleal_remove_peer_handle(const uint16_t handle)
 {
     bleal_peer_list_t ** prev_pp = NULL;
     bleal_peer_list_t ** pp = &p_head;
     uint16_t count = 0;
     while( *pp ) {
-        const uint16_t h = (uint16_t)(uint32_t)(*pp)->peer.p_handle;
+        const uint16_t h = bleal_nrf_get_handle_from_peer(&((*pp)->peer));
         if ( h == handle ) {
             bleal_peer_list_t *p = *pp;
             pp = &p->p_next;
@@ -80,11 +80,11 @@ bleal_err remove_peer_handle(const uint16_t handle)
     return BLEAL_ERR_SUCCESS;
 }
 
-bleal_err find_peer(const uint16_t conn_handle, bleal_peer_t *p_peer)
+bleal_err bleal_find_peer(const uint16_t conn_handle, bleal_peer_t *p_peer)
 {
     bleal_peer_list_t **pp = &p_head;
     while(*pp ) {
-        const uint16_t handle = (uint16_t)(uint32_t)(*pp)->peer.p_handle;
+        const uint16_t handle = bleal_nrf_get_handle_from_peer(&((*pp)->peer));
         if (handle == conn_handle ) {
             if ( p_peer ) {
                 *p_peer = (*pp)->peer;
@@ -96,3 +96,7 @@ bleal_err find_peer(const uint16_t conn_handle, bleal_peer_t *p_peer)
     return BLEAL_ERR_NOT_FOUND;
 }
 
+bleal_peer_t * bleal_get_first_peer(void)
+{
+    return &(p_head->peer);
+}

@@ -41,13 +41,15 @@ typedef void (*bleal_event_write_request_callback_func)();
 
 typedef void (*bleal_event_read_request_callback_func)();
 
-typedef struct bleal_event_callbacks_t
+typedef struct bleal_characteristic_event_callbacks_t
 {
-    bleal_event_notification_callback_func notification_callback;
-    bleal_event_write_request_callback_func write_callback;
-    bleal_event_read_request_callback_func read_callback;
-}bleal_event_callbacks_t;
+    bleal_event_notification_callback_func notification_callback; // state event about notification
+    bleal_event_write_request_callback_func write_callback; // request to write operation
+    bleal_event_read_request_callback_func read_callback; // request to read operation
+}bleal_characteristic_event_callbacks_t;
 
-bleal_err register_bleal_event_callback(bleal_event_callback_func event_callback);
+
+// register a global event callback function pointer
+bleal_err bleal_register_event_callback(bleal_event_callback_func p_event_callback);
 
 #endif

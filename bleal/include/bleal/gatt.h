@@ -173,7 +173,7 @@ typedef struct bleal_gatt_characteristic_definition_t
     bleal_gatt_characteristic_descriptor_t *p_descriptors;
     uint16_t descriptors_num;
 
-    bleal_event_callbacks_t callbacks;
+    bleal_characteristic_event_callbacks_t callbacks;
 } bleal_gatt_characteristic_definition_t, bleal_gatt_characteristic_t;
 
 // refer: Bluetooth Core Specification 4.1 Volume 3 Part G. 3.1

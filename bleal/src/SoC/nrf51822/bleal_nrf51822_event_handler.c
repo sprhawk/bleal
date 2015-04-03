@@ -29,14 +29,22 @@
 
 #include <string.h>
 
-void ble_on_event_handler(ble_evt_t * p_ble_evt)
+static bleal_event_callback_func _p_event_callback = NULL;
+
+bleal_err bleal_register_event_callback(bleal_event_callback_func p_event_callback)
+{
+    _p_event_callback = p_event_callback;
+    return BLEAL_ERR_SUCCESS;
+}
+
+void bleal_on_event_handler(ble_evt_t * p_ble_evt)
 {
 #ifdef DEBUG
     log_event(p_ble_evt);
 #endif
     // bleal_err err = BLEAL_ERR_NOT_IMPLEMENTED;
     uint16_t conn_handle = 0;
-    bleal_peer_t peer = {NULL};
+    bleal_peer_t *p_peer = NULL;
 
     switch(p_ble_evt->header.evt_id) {
         // common events
@@ -49,13 +57,26 @@ void ble_on_event_handler(ble_evt_t * p_ble_evt)
         
         // gap events
         case BLE_GAP_EVT_CONNECTED:
-            conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
-            CHECK_ERR(new_peer(conn_handle, &peer));
+            {
+                conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
+                CHECK_ERR(bleal_new_peer(conn_handle, NULL));
 
+                bleal_event_callback_func f = _p_event_callback;
+                if ( f ) {
+                    p_peer = bleal_get_first_peer();
+                    f(BLEAL_EVENT_CONNECTED, p_peer);
+                }
+            }
             break;
         case BLE_GAP_EVT_DISCONNECTED:
-            conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
-            CHECK_ERR(remove_peer_handle(conn_handle));
+            {
+                bleal_event_callback_func f = _p_event_callback;
+                if ( f ) {
+                    p_peer = bleal_get_first_peer();
+                    f(BLEAL_EVENT_DISCONNECTED, p_peer);
+                }
+                CHECK_ERR(bleal_remove_peer_handle(conn_handle));
+            }
             break;
         case BLE_GAP_EVT_CONN_PARAM_UPDATE:
             break;

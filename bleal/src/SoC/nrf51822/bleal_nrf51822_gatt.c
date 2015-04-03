@@ -26,6 +26,7 @@
 #include "bleal/gatt.h"
 #include "bleal/uuid.h"
 #include "bleal/log.h"
+#include "bleal/event_handler.h"
 
 #include "bleal_nrf51822.h"
 #include "bleal_nrf51822_uuid.h"
@@ -36,6 +37,7 @@ typedef struct bleal_characteristic_handle_t {
     struct bleal_characteristic_handle_t *p_next;
     uint16_t handle; // a reference to the characteristic
     ble_gatts_char_handles_t nrf_handles; // nRF SDK defined handles
+    bleal_characteristic_event_callbacks_t event_callbacks;
 } bleal_characteristic_handle_t;
 
 typedef struct bleal_service_handle_t {
@@ -226,6 +228,13 @@ bleal_err bleal_gatt_add_characteristic(const uint16_t service_handle, const ble
             bleal_characteristic_handle_t * p_handle = new_characteristic_slot(p_service);
             if( p_handle ) {
                 p_handle->handle = p_characteristic->handle;
+
+                // save event callback functions
+                p_handle->event_callbacks.notification_callback = p_characteristic->callbacks.notification_callback;
+                p_handle->event_callbacks.write_callback = p_characteristic->callbacks.write_callback;
+                p_handle->event_callbacks.read_callback = p_characteristic->callbacks.read_callback;
+
+                // no error handling code to remove the failed characteristic
                 RETURN_NRF_ERROR(sd_ble_gatts_characteristic_add(BLE_GATT_HANDLE_INVALID, &char_md, &attr_value, &p_handle->nrf_handles));
             }
         }
