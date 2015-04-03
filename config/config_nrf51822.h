@@ -36,7 +36,8 @@
 #define TX_PIN_NUMBER  9    // UART TX pin number.
 #define CTS_PIN_NUMBER 10    // UART Clear To Send pin number. Not used if HWFC is set to false. 
 #define RTS_PIN_NUMBER 8    // UART Request To Send pin number. Not used if HWFC is set to false. 
-#define HWFC           true // UART hardware flow control.
+// #define HWFC           true // UART hardware flow control.
+#define HWFC           false // UART hardware flow control.
 
 #endif
 

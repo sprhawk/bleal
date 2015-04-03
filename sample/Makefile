@@ -1,15 +1,15 @@
 # build scripts come from https://github.com/sprhawk/nrf51822-macosx-build-scripts
 # modifiy Makefile.config.template from build scripts to adapt your environment
 
-include ../Makefile.config
+include ../../Makefile.config
 
-INCLUDEPATHS += -I"bleal" -I"config"
+INCLUDEPATHS += -I"../bleal" -I"../config"
 
 # BLE AL for nRF51822
-INCLUDEPATHS += -I"bleal/src/Soc/nrf51822"
-INCLUDEPATHS += -I"bleal/include"
-C_SOURCE_PATHS += bleal/src
-C_SOURCE_PATHS += bleal/src/SoC/nrf51822
+INCLUDEPATHS += -I"../bleal/src/Soc/nrf51822"
+INCLUDEPATHS += -I"../bleal/include"
+C_SOURCE_PATHS += ../bleal/src
+C_SOURCE_PATHS += ../bleal/src/SoC/nrf51822
 
 C_SOURCE_FILES += bleal.c bleal_nrf51822.c bleal_nrf51822_event_handler.c bleal_nrf51822_scheduler.c bleal_nrf51822_sys_handler.c bleal_nrf51822_uuid.c bleal_nrf51822_gatt.c bleal_nrf51822_peer.c
 C_SOURCE_FILES += bleal_advertisement.c 
