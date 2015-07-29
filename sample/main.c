@@ -27,7 +27,9 @@
 
 int main()
 {
+#ifdef DEBUG
     bleal_uart_init();
+#endif
     bleal_log("a\nb\nc\nd\ne\nf\n");
 
     ble_app_initialize();
