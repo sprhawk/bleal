@@ -230,9 +230,9 @@ bleal_err bleal_gatt_add_characteristic(const uint16_t service_handle, const ble
                 p_handle->handle = p_characteristic->handle;
 
                 // save event callback functions
-                p_handle->event_callbacks.notification_callback = p_characteristic->callbacks.notification_callback;
-                p_handle->event_callbacks.write_callback = p_characteristic->callbacks.write_callback;
-                p_handle->event_callbacks.read_callback = p_characteristic->callbacks.read_callback;
+                // p_handle->event_callbacks.notification_callback = p_characteristic->callbacks.notification_callback;
+                // p_handle->event_callbacks.write_callback = p_characteristic->callbacks.write_callback;
+                // p_handle->event_callbacks.read_callback = p_characteristic->callbacks.read_callback;
 
                 // no error handling code to remove the failed characteristic
                 RETURN_NRF_ERROR(sd_ble_gatts_characteristic_add(BLE_GATT_HANDLE_INVALID, &char_md, &attr_value, &p_handle->nrf_handles));

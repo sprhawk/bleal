@@ -13,6 +13,8 @@
 void ble_app_start_adv(void);
 void ble_app_stop_adv(void);
 
+void ble_app_event_callback(const bleal_event_type_t type, const bleal_peer_t *peer);
+
 void ble_app_initialize(void)
 {
     bleal_initialize(true);
@@ -68,6 +70,11 @@ void ble_app_initialize(void)
     };
 
     CHECK_ERR(bleal_gatt_add_service(&service));
+
+    bleal_event_callbacks_t callbacks;
+    memset(&callbacks, 0, sizeof(callbacks));
+    callbacks.event_callback_func = ble_app_event_callback;
+    CHECK_ERR(bleal_register_event_callback(&callbacks));
 }
 
 void ble_app_start(void)
@@ -109,4 +116,17 @@ void ble_app_start_adv(void)
 void ble_app_stop_adv(void)
 {
     bleal_stop_advertising();
+}
+
+void ble_app_event_callback(const bleal_event_type_t type, const bleal_peer_t *peer)
+{
+    switch(type) {
+        case BLEAL_EVENT_CONNECTED:
+            break;
+        case BLEAL_EVENT_DISCONNECTED:
+            ble_app_start_adv();
+            break;
+        default:
+            break;
+    }
 }

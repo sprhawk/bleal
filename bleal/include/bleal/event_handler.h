@@ -37,19 +37,23 @@ typedef enum bleal_event_type_t
 
 typedef void (*bleal_event_callback_func)(const bleal_event_type_t type, const bleal_peer_t *peer);
 typedef void (*bleal_event_notification_callback_func)(const bool is_notifying);
-typedef void (*bleal_event_write_request_callback_func)();
-
+typedef void (*bleal_event_write_request_callback_func)(const bleal_peer_t *peer, const uint16_t service_handle, const uint16_t characteristic_handle, uint8_t *value, uint16_t length);
 typedef void (*bleal_event_read_request_callback_func)();
 
 typedef struct bleal_characteristic_event_callbacks_t
 {
     bleal_event_notification_callback_func notification_callback; // state event about notification
     bleal_event_write_request_callback_func write_callback; // request to write operation
-    bleal_event_read_request_callback_func read_callback; // request to read operation
+    // bleal_event_read_request_callback_func read_callback; // request to read operation
 }bleal_characteristic_event_callbacks_t;
+
+typedef struct bleal_event_callbacks_t {
+    bleal_characteristic_event_callbacks_t characteristic_events;
+    bleal_event_callback_func event_callback_func;
+} bleal_event_callbacks_t;
 
 
 // register a global event callback function pointer
-bleal_err bleal_register_event_callback(bleal_event_callback_func p_event_callback);
+bleal_err bleal_register_event_callback(const bleal_event_callbacks_t *p_event_callbacks);
 
 #endif

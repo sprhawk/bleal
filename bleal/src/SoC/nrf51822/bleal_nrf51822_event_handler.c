@@ -30,10 +30,15 @@
 #include <string.h>
 
 static bleal_event_callback_func _p_event_callback = NULL;
+static bleal_characteristic_event_callbacks_t _characteristic_event_callbacks = {};
 
-bleal_err bleal_register_event_callback(bleal_event_callback_func p_event_callback)
+bleal_err bleal_register_event_callback(const bleal_event_callbacks_t *p_event_callbacks)
 {
-    _p_event_callback = p_event_callback;
+    if(p_event_callbacks) {
+        _p_event_callback = p_event_callbacks->event_callback_func;
+        _characteristic_event_callbacks = p_event_callbacks->characteristic_events;
+    }
+
     return BLEAL_ERR_SUCCESS;
 }
 
@@ -125,6 +130,14 @@ void bleal_on_event_handler(ble_evt_t * p_ble_evt)
     
         // gatts events
         case BLE_GATTS_EVT_WRITE:
+            // ble_gatts_evt_write_t write = p_ble_evt->evt.gatts_evt.params.write;
+            // write.op
+            // write.handle
+            // write.context
+            // write.offset
+            // write.len
+            // write.data
+            
             break;
     
         case BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST:
