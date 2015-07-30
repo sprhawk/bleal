@@ -35,7 +35,7 @@
 
 typedef struct bleal_characteristic_handle_t {
     struct bleal_characteristic_handle_t *p_next;
-    uint16_t handle; // a reference to the characteristic
+    uint16_t handle; // a internal reference to the characteristic
     ble_gatts_char_handles_t nrf_handles; // nRF SDK defined handles
     bleal_characteristic_event_callbacks_t event_callbacks;
 } bleal_characteristic_handle_t;
@@ -244,3 +244,14 @@ bleal_err bleal_gatt_add_characteristic(const uint16_t service_handle, const ble
     return BLEAL_ERR_INVALID_PARAMETER;
 }
 
+
+bleal_err bleal_gatt_update_characteristic_value(const uint16_t service_handle, const uint16_t characteristic_handle, const void *p_value, uint16_t *p_length)
+{
+    bleal_characteristic_handle_t *char_handle = get_characteristic_handle_slot(service_handle, characteristic_handle);
+    if( char_handle && p_value && p_length) {
+        uint16_t len = *p_length;
+        RETURN_NRF_ERROR(sd_ble_gatts_value_set(char_handle->nrf_handles.value_handle, 0, &len, p_value));
+        *p_length = len;
+    }
+    return BLEAL_ERR_INVALID_PARAMETER;
+}

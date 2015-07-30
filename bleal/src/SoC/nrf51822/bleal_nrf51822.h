@@ -34,6 +34,7 @@
 #include "ble_gap.h"
 #include "app_scheduler.h"
 #include "app_timer.h"
+#include "ble_gatts.h"
 
 #include "bleal/bleal.h"
 #include "bleal/error.h"

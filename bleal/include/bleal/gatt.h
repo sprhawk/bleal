@@ -192,6 +192,7 @@ typedef struct bleal_gatt_service_definition_t
 bleal_err bleal_gatt_add_service(const bleal_gatt_service_t *p_service);
 bleal_err bleal_gatt_add_characteristic(const uint16_t service_handle, const bleal_gatt_characteristic_t *p_characteristic);
 bleal_err bleal_gatt_add_characteristic_descriptior(const uint16_t characteristic_handle, const bleal_gatt_characteristic_descriptor_t *p_descriptor);
+bleal_err bleal_gatt_update_characteristic_value(const uint16_t service_handle, const uint16_t characteristic_handle, const void *p_value, uint16_t *p_length);
 
 #endif // _BLE_AL_GATT_H_
 
